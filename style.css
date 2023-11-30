@@ -1,0 +1,228 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height:100vh;
+    overflow-x:hidden;
+}
+
+.event-table {
+    display:none;
+}
+
+.timeline-container {
+
+    --timeline-height: 500px; 
+    --colour-category-0: white;
+    --colour-category-1: hsl(220, 70%, 57%);
+    --colour-category-2: hsl(316, 60%, 60%);
+    --colour-category-3: hsl(108, 80%, 70%);
+    --colour-category-4: hsl(60, 63%, 46%);
+    --colour-category-5: hsl(60, 90%, 70%);
+    --colour-category-6: hsl(0, 14%, 36%);
+    --colour-category-7: hsl(180, 63%, 68%);
+    --colour-category-8: hsl(123, 37%, 50%);
+    --colour-category-9: hsl(313, 40%, 37%);
+
+    .category-0 {
+        background-color: var(--colour-category-0);
+    }
+    .category-1 {
+        background-color: var(--colour-category-1);
+    }
+    .category-2 {
+        background-color: var(--colour-category-2);
+    }
+    .category-3 {
+        background-color: var(--colour-category-3);
+    }
+    .category-4 {
+        background-color: var(--colour-category-4);
+    }
+    .category-5 {
+        background-color: var(--colour-category-5);
+    }
+    .category-6 {
+        background-color: var(--colour-category-6);
+    }
+    .category-7 {
+        background-color: var(--colour-category-7);
+    }
+    .category-8 {
+        background-color: var(--colour-category-8);
+    }
+    .category-9 {
+        background-color: var(--colour-category-9);
+    }
+    
+    width:100%;
+    box-sizing: border-box;
+    padding:1rem;
+    background-color: rgb(230, 236, 230);
+}
+
+.timeline-title {
+    width:100%;
+    font-weight:bold;
+    text-align:center;
+    padding:1rem;
+}
+
+.timeline-category {
+    display:inline-block;
+    padding:0.3rem;
+    margin-left:0.5rem;
+}
+.timeline-search-group {
+    position:relative;
+    display:inline-block;
+}
+.timeline-search {
+    display:inline-block;
+    padding:0.3rem;
+    margin-left:0.5rem;
+}
+.timeline-search-clear-button {
+    position:relative;
+    right:1.5rem;
+    display:inline-block;
+    padding:0.3rem;
+    background-color: white;
+    border:none;
+    cursor: pointer;
+}
+
+.timeline-content {
+    display:flex;
+    overflow:hidden;
+}
+
+.timeline-content > div {
+    transition: flex-basis 0.3s ease-in-out;
+}
+
+.timeline-summary-container {
+    box-sizing: border-box;
+    flex-basis:0;
+    max-height: var(--timeline-height);
+    overflow-y:auto;
+}
+
+.timeline-summary-text {
+    position:relative;
+    text-align: left;
+    padding:1rem 1rem 1rem 1rem;
+    word-wrap: break-word;
+    opacity:0;
+    transition: opacity 0.3s ease-in-out 0.3s;
+}
+
+.timeline-content.show {
+    .timeline-summary-container {
+        flex-basis:30%;
+    }
+    .timeline-summary-text {
+        opacity:1;
+    }
+    .timeline-chart-container {
+        flex-basis:70%;
+    }
+    /* .timeline-x-axis {
+        width:70%;
+    } */
+}
+
+.timeline-summary-close-button {
+    position:relative;
+    display:block;
+    margin:1rem 0 0 1rem;
+    padding:0.3rem 0.5rem;
+    background-color:white;
+    cursor: pointer;
+    border:none;
+}
+
+.timeline-summary-close-button:hover {
+    background-color:rgb(247, 212, 212);
+}
+
+.timeline-chart-container {
+    /* position:relative; */
+    flex-basis:100%;
+    /* max-height: var(--timeline-height); */
+
+    overflow:hidden;
+
+    box-sizing: border-box;
+    padding: 0.5rem;
+    /* margin-top:0.5rem; */
+}
+
+.timeline-events {
+    /* position:relative; */
+    box-sizing: border-box;
+    max-height: var(--timeline-height);
+    overflow-x: hidden;
+    overflow-y:auto;
+}
+
+.timeline-event {
+    position:relative;
+    height:1.6rem;
+    box-sizing: border-box;
+    overflow:visible;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top:0.3rem;
+    cursor: pointer;
+
+    .title {
+        position:absolute;
+        top:0.3rem;
+        left : 0.3rem;
+        padding-left: 100%;
+        white-space: nowrap;
+    }
+
+    &.right .title {
+        left:auto;
+        padding-left: 0;
+        padding-right: 100%;
+        right:0.3rem;
+        text-align: right;
+    }
+
+    &.selected .title {
+        font-weight: bold;
+    }
+
+    transition: opacity,height 0.4s ease-in-out;
+    &.hide, &.filter {
+        opacity:0;
+        height:0px;
+    }
+}
+
+
+.timeline-x-axis {
+    width:100%;
+    display:flex;
+    justify-content:space-between;
+    box-sizing: border-box;
+}
+
+.timeline-x-axis div {
+    box-sizing: border-box;
+    padding:0.2rem 0 0 0.2rem;
+    border-top:1px solid gray;
+    border-left: 1px solid gray;
+    flex-grow: 1;
+    text-align: left;
+}
+
+
+.timeline-x-axis div:last-child {
+    border-right: 1px solid gray;
+}
+
+
+
