@@ -187,7 +187,6 @@ document.addEventListener('DOMContentLoaded', function () {
             when = -numericPart * 1000
             break
         }
-        console.log('found geological year')
         return when
       }
       // Check for a christian year (suffixed with bc or ad)
@@ -398,15 +397,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     showSummary(eventElement) {
+      const regex = /(https?:\/\/[\w.?=&\/;]+)/gm
+      const subst = `<a href="$1">$1</a>`;
       // Save instance for use in clearing summary
       eventElement.classList.add('selected')
       this.selectedEventId = eventElement.dataset.id
       const event = this.events[this.selectedEventId]
-      let citations = event.citations.split('\n')
-      citations = citations.map(citation => {
-        const trimmed = citation.trim()
-        return `<a href="${trimmed}">${trimmed}</a>`
-      })
+      const citations = event.citations.replace(regex, subst);
       const start = this.type === 'UTC' ? event.start.toLocaleDateString() : this.displayDate(event.start)
       const end = event.ongoing ? 'date' :
         (this.type === 'UTC' ? event.end.toLocaleDateString() : this.displayDate(event.end))
@@ -414,8 +411,8 @@ document.addEventListener('DOMContentLoaded', function () {
         `<h4>${event.title}</h4>` +
         `<h5>${start} - ${end}</h5>` +
         `<div>${event.summary}</div>` +
-        '<h4>Citations</h4>' +
-        citations.join('<br>')
+        '<h5>Citations</h5>' +
+        citations
       this.timelineContent.classList.add('show')
     }
 
