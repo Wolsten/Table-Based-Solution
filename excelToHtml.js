@@ -1,3 +1,5 @@
+// Convert an excel spreadsheet containing timeline data into an HTML 
+// file ready to display as a graphical timeline
 // Useage:
 // npm install xlsx
 // node excelToHtml yourExcelFile.xlsx

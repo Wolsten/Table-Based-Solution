@@ -50,6 +50,8 @@ Christian era and geologic indicators are case-insensitive.
 
 Each timeline should use the same method. Ongoing events are specified by setting their end date to the word **date**.
 
+There is also a node script for converting an Excel spreadsheet table into the equivalent HTML page to display as a graphical timeline.
+
 ## Licence
 
 MIT License
