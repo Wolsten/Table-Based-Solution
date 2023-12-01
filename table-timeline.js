@@ -32,12 +32,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     constructor(timelineTable) {
       this.eventsTable = timelineTable
+      console.log(this.eventsTable)
       this.tableData = Array.from(this.eventsTable.getElementsByTagName('tr'))
       if (timelineTable.dataset.categoryColours) {
         this.categoryColours = timelineTable.dataset.categoryColours.split(';')
       }
       this.buildDomElements()
-      this.readEventsFromTable()
+      this.readEvents()
       this.addFilterControls()
       this.addXAxis()
       this.addEventsToChart()
@@ -48,12 +49,14 @@ document.addEventListener('DOMContentLoaded', function () {
       const html =
         `<div class="timeline-container" id="${this.id}">
 
-          <div class="timeline-title">${this.eventsTable.id}</div>
+          <div class="timeline-title">${this.eventsTable.title}</div>
 
           <div class="timeline-filter-controls">
-            Categories: <span class="timeline-categories"></span>
+            <div class="timeline-categories-group">
+              <label>Categories:</label><span class="timeline-categories"></span>
+            </div>
             <div class="timeline-search-group">
-              Search: <input type="text" class="timeline-search" value=""/><button class="timeline-search-clear-button">X</button>
+              <label>Search:</label><input type="text" class="timeline-search" value=""/><button class="timeline-search-clear-button">X</button>
             </div>
           </div>
 
@@ -122,23 +125,33 @@ document.addEventListener('DOMContentLoaded', function () {
       if (this.type === 'UTC') {
         this.start = new Date((startYear) + '-01-01T12:00:00')
         this.end = new Date((year) + '-01-01T12:00:00')
+
       } else {
         this.end = year
       }
       this.range = this.end - this.start
-      // console.log('Modifed start = ', this.start)
-      // console.log('Modifed end =', this.end)
+      console.log('Modifed start = ', this.start)
+      console.log('Modifed end =', this.end)
       // console.table(labels)
       let text
       this.timelineXAxis.innerHTML = ''
-      labels.forEach(label => {
+      labels.forEach( (label,index) => {
         if (this.type === 'UTC') {
           text = label
         } else {
           text = this.displayDate(label)
         }
-        this.timelineXAxis.innerHTML += `<div>${text}</div>`
+        const percentageWidth = interval === 1 ? 100 : 20
+        const style = index!==0 ? `style="flex-basis:${percentageWidth}%;"` : ''
+        const className = index===0 ? 'class="first"' : ''
+        this.timelineXAxis.innerHTML += `<div ${className} ${style}>${text}</div>`
       })
+      if (this.type === 'UTC') {
+        text = year
+      } else {
+        text = this.displayDate(year)
+      }
+      this.timelineXAxis.innerHTML += `<div class="last">${text}</div>`
     }
 
 
@@ -231,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    readEventsFromTable() {
+    readEvents() {
       Array.from(this.eventsTable.getElementsByTagName('tr')).forEach((row, index) => {
         const cells = row.getElementsByTagName('td');
         if (cells.length >= 5) { // Assuming each row has at least 5 cells (title, start, end, category, summary,citations)
@@ -239,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function () {
           const start = this.readDate(cells[1].innerText)
           const end = this.readDate(cells[2].innerText)
           const event = {
-            id: index,
+            id: index-1, // First row are headers
             title: cells[0].innerText,
             start,
             end,
@@ -315,9 +328,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     addFilterControls() {
       this.timelineCategories.innerHTML = this.categories.map((category, index) => {
-        const colour = this.categoryColours.length > 0 ? `style="background-color:${this.categoryColours[index]};"` : ''
-        return `<label class="timeline-category category-${index}" ${colour}>${category} 
-            <input type="checkbox" name="category[${index}]" value="${index}" checked/>
+        const colour = this.categoryColours.length > 0 ? `style="border: 1px solid ${this.categoryColours[index]};"` : ''
+        return `<label class="timeline-category category-${index}" ${colour}>${category}
+            <input type="checkbox" name="category[${index}]" value="${index}" checked />
           </label>`
       }).join('')
       // Text search
@@ -442,7 +455,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Initialisation
   const timelineTables = document.getElementsByClassName('timeline-table')
-  // console.log('event tables', timelineTables)
+  console.log('event tables', timelineTables)
   Array.from(timelineTables).forEach(table => {
     timelines.push(new Timeline(table));
   })
