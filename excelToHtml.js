@@ -3,6 +3,7 @@
 // Useage:
 // npm install xlsx
 // node excelToHtml yourExcelFile.xlsx
+// Stephen JOhn Davison
 // 31/11/23
 
 
