@@ -20,10 +20,9 @@ document.addEventListener('DOMContentLoaded', function () {
     eventsTable
     minPosition
     maxPosition
-    start
-    end
+    startYear
+    endYear
     range
-    type
     events = []
     categories = ['All']
     categoryColours = []
@@ -41,7 +40,7 @@ document.addEventListener('DOMContentLoaded', function () {
       this.readEvents()
       this.addFilterControls()
       this.addXAxis()
-      this.addEventsToChart()
+      this.displayEvents()
     }
 
 
@@ -95,82 +94,99 @@ document.addEventListener('DOMContentLoaded', function () {
       this.timelineSummaryCloseButton.addEventListener('click', () => this.clearSummary())
     }
 
+    readEvents() {
+      Array.from(this.eventsTable.getElementsByTagName('tr')).forEach((row, index) => {
+        const cells = row.getElementsByTagName('td');
+        if (cells.length >= 5) { // Assuming each row has at least 5 cells (title, start, end, category, summary,citations)
+          // Find "when" events happen, either as a year or date (convert)
+          const startString = cells[1].innerText.trim()
+          let endString = cells[2].innerText.trim()
+          const start = this.readDate(startString)
+          const end = this.readDate(endString, start)
+          if (endString === 'date' || endString === '-') {
+            endString = 'date'
+          } else if (end.type === 'UTC') {
+            endString = start.when.toLocaleDateString()
+          }
+          const event = {
+            id: index - 1, // First row are headers
+            title: cells[0].innerText.trim(),
+            startString: start.type === 'UTC' ? start.when.toLocaleDateString() : startString,
+            endString,
+            start: start.when,
+            end: end.when,
+            type: start.type,
+            category: cells[3].innerText.trim(),
+            summary: cells[4].innerHTML,
+            citations: cells[5].innerHTML
+          }
+          //console.log('event', event.title)
+          // Check for earliest date
+          if (!this.start || this.start > event.start) {
+            this.start = event.type === 'UTC' ? new Date(event.start) : event.start
+          }
+          // Check for latest date
+          if (!this.endYear || this.endYear < event.end) {
+            this.end = event.type === 'UTC' ? new Date(event.end) : event.end
+          }
+          // Collect new categories
+          if (!this.categories.includes(event.category)) this.categories.push(event.category)
+          this.events.push(event)
+        }
+      })
+      //console.table(this.events)
+    }
 
     addXAxis() {
-      let startYear = 0
-      let endYear = 0
-      let years = 0
+      this.startYear = typeof this.start === 'number' ? this.start : this.start.getFullYear()
+      this.endYear = typeof this.end === 'number' ? this.end : this.end.getFullYear()
+      const years = this.endYear - this.startYear + 1
       let labels = []
-      if (this.type === 'UTC') {
-        this.start.setMonth(0)
-        this.start.setDate(1)
-        this.end.setMonth(11)
-        this.end.setDate(31)
-        endYear = this.end.getFullYear()
-        startYear = this.start.getFullYear()
-      } else {
-        endYear = this.end
-        startYear = this.start
-      }
-      years = endYear - startYear + 1
       let interval = 1
       if (years > 5) {
         interval = Math.round(years / 5)
       }
-      let year = startYear
-      while (year < endYear) {
+      let year = this.startYear
+      while (year < this.endYear) {
         labels.push(year)
         year += interval
       }
-      if (this.type === 'UTC') {
-        this.start = new Date((startYear) + '-01-01T12:00:00')
-        this.end = new Date((year) + '-01-01T12:00:00')
-
-      } else {
-        this.end = year
-      }
-      this.range = this.end - this.start
-      console.log('Modifed start = ', this.start)
-      console.log('Modifed end =', this.end)
+      this.endYear = year
+      this.range = this.endYear - this.startYear
+      console.log('Ranged start year = ', this.startYear)
+      console.log('Ranged year end =', this.endYear)
       // console.table(labels)
-      let text
       this.timelineXAxis.innerHTML = ''
-      labels.forEach( (label,index) => {
-        if (this.type === 'UTC') {
-          text = label
-        } else {
-          text = this.displayDate(label)
-        }
+      labels.forEach((label, index) => {
+        const text = this.displayDate(label, 'axis')
         const percentageWidth = interval === 1 ? 100 : 20
-        const style = index!==0 ? `style="flex-basis:${percentageWidth}%;"` : ''
-        const className = index===0 ? 'class="first"' : ''
+        const style = index !== 0 ? `style="flex-basis:${percentageWidth}%;"` : ''
+        const className = index === 0 ? 'class="first"' : ''
         this.timelineXAxis.innerHTML += `<div ${className} ${style}>${text}</div>`
       })
-      if (this.type === 'UTC') {
-        text = year
-      } else {
-        text = this.displayDate(year)
-      }
+      const text = this.displayDate(year, 'axis')
       this.timelineXAxis.innerHTML += `<div class="last">${text}</div>`
     }
 
 
-
-    displayDate(date) {
-      if (this.type === 'UTC') {
-        return new Date(date).toLocaleDateString();
-      } else if (this.type === 'geological') {
-        date = -date
-        // console.log('date', date)
-        if (date > 1000000000) {
-          return (date / 1000000000).toFixed(1) + 'bya';
-        } else if (date > 1000000) {
-          return (date / 1000000).toFixed(1) + 'mya';
-        } else if (date > 1000) {
-          return (date / 1000).toFixed(1) + 'tya';
-        } else {
-          return date.toFixed(1) + 'ya'
+    /**
+     * 
+     * @param {number} date Axis date or event date
+     * @param {string} type If type is 'axis' date will be a year
+     * @returns 
+     */
+    displayDate(date, type) {
+      if (date < -999) {
+        const magnitude = Math.abs(date)
+        if (magnitude > 1000000000) {
+          return (magnitude / 1000000000).toFixed(1) + 'bya';
+        } else if (magnitude > 1000000) {
+          return (magnitude / 1000000).toFixed(1) + 'mya';
+        } else if (magnitude > 1000) {
+          return (magnitude / 1000).toFixed(1) + 'tya';
         }
+      } else if (type === 'UTC') {
+        return new Date(date).toLocaleDateString();
       } else {
         return date
       }
@@ -178,111 +194,99 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // The getTime() method of Date instances returns the number of milliseconds for this date 
     // since the epoch, which is defined as the midnight at the beginning of January 1, 1970, UTC.
-    // Take in a string date and return UTC day
-    readDate(stringDate) {
+    // Take in a string date and returns either a number year or a UTC date along with the type of date
+    readDate(stringDate, start) {
       let when
+      let type
       // console.log('reading date',stringDate)
+
+      // Special processing for end events
+      if (start !== undefined) {
+
+        // Look for ongoing events (type will already be set from start date)
+        if (stringDate === 'date' || stringDate === '-') {
+          if (start.type === 'UTC') {
+            when = new Date()
+            when.setUTCHours(12, 0, 0, 0)
+          } else if (start.type === 'billionYearsAgo' || start.type === 'thousandYearsAgo' || start.yype === 'thousandYearsAgo') {
+            when = 0
+          } else {
+            when = new Date().getFullYear()
+          }
+          type = start.type
+          return { type, when }
+        }
+
+        // Check for "start-only" evets
+        if (stringDate === '') {
+          return { ...start }
+        }
+      }
+
       // Test for a geological timescale such as 10mya
       const geologicalRegexPattern = /^([0-9]+[.]*[0-9]*)([bmtBMT])ya$/
       let matchResult = geologicalRegexPattern.exec(stringDate)
       if (matchResult !== null) {
-        if (!this.type) this.type = 'geological'
         const numericPart = matchResult[1]
         const magnitudePart = matchResult[2].toLowerCase()
         switch (magnitudePart) {
           case 'b':
-            when = -numericPart * 1000000000
+            type = 'billionYearsAgo'
+            when = numericPart * -1000000000
             break
           case 'm':
-            when = -numericPart * 1000000
+            type = 'millionYearsAgo'
+            when = numericPart * -1000000
             break
           case 't':
-            when = -numericPart * 1000
+            type = 'thousandYearsAgo'
+            when = numericPart * -1000
             break
         }
-        return when
+        return { type, when }
       }
-      // Check for a christian year (suffixed with bc or ad)
-      const christianRegexPattern = /^([0-9]+)(bc|BC|ad|AD)$/
-      matchResult = christianRegexPattern.exec(stringDate)
+
+      // Check for a Gregorian year (suffixed with bc or ad)
+      const gregorianRegexPattern = /^([0-9]+)(bc|BC|ad|AD)$/
+      matchResult = gregorianRegexPattern.exec(stringDate)
       if (matchResult !== null) {
-        if (!this.type) this.type = 'christian'
+        type = 'gregoriam'
         const sign = matchResult[2].toLowerCase() == 'bc' ? -1 : 1
         when = sign * matchResult[1]
-        return when
+        return { type, when }
       }
+
+      // Check for a common era year (suffixed with bce or ce)
+      const commonEraRegexPattern = /^([0-9]+)(bce|BCE|ce|CE)$/
+      matchResult = commonEraRegexPattern.exec(stringDate)
+      if (matchResult !== null) {
+        type = 'commonEra'
+        const sign = matchResult[2].toLowerCase() == 'bce' ? -1 : 1
+        when = sign * matchResult[1]
+        return { type, when }
+      }
+
       // Full UTC date?
       const dateRegexPattern = /^([0-9]+)-([0-9]+)-([0-9]+)$/
       matchResult = dateRegexPattern.exec(stringDate)
       if (matchResult !== null) {
-        if (!this.type) this.type = 'UTC'
+        type = 'UTC'
         when = new Date(stringDate + 'T12:00:00')
-        return when
+        return { type, when }
       }
+
       // Check for a plain year, e.g. 1961
       const yearRegexPattern = /^([0-9]+)$/
       matchResult = yearRegexPattern.exec(stringDate)
       if (matchResult !== null) {
-        if (!this.type) this.type = 'christian'
-        const sign = matchResult[2].toLowerCase() == 'bc' ? -1 : 1
+        type = 'gregorian'
+        const sign = matchResult[2].toLowerCase() === 'bc' ? -1 : 1
         when = sign * matchResult[1]
-        return when
+        return { type, when }
       }
-      // Look for ongoing events (type will already be set from start date)
-      if (stringDate === 'date') {
-        if (this.type === 'geological') {
-          when = 0
-        } else if (this.type === 'UTC') {
-          when = new Date()
-          when.setUTCHours(12, 0, 0, 0)
-        } else {
-          when = new Date().getFullYear()
-        }
-        return when
-      }
+
       console.error(`Date [${stringDate}] not recognised`)
-    }
-
-
-    readEvents() {
-      Array.from(this.eventsTable.getElementsByTagName('tr')).forEach((row, index) => {
-        const cells = row.getElementsByTagName('td');
-        if (cells.length >= 5) { // Assuming each row has at least 5 cells (title, start, end, category, summary,citations)
-          // Find "when" events happen, either as a year or date (convert)
-          const start = this.readDate(cells[1].innerText)
-          const end = this.readDate(cells[2].innerText)
-          const event = {
-            id: index-1, // First row are headers
-            title: cells[0].innerText,
-            start,
-            end,
-            ongoing: cells[2].innerText === 'date',
-            category: cells[3].innerText,
-            summary: cells[4].innerHTML,
-            citations: cells[5].innerHTML
-          }
-          // Check for earliest date
-          if (!this.start || this.start > event.start) {
-            if (this.type === 'UTC') {
-              this.start = new Date(event.start)
-            } else {
-              this.start = event.start
-            }
-          }
-          // Check for latest date
-          if (!this.end || this.end < event.end) {
-            if (this.type === 'UTC') {
-              this.end = new Date(event.end)
-            } else {
-              this.end = event.end
-            }
-          }
-          // Collect new categories
-          if (!this.categories.includes(event.category)) this.categories.push(event.category)
-          this.events.push(event)
-        }
-      })
-      // console.table(this.events)
+      return { type: 'error', when: `Date [${stringDate}] not recognised` }
     }
 
 
@@ -354,27 +358,41 @@ document.addEventListener('DOMContentLoaded', function () {
       })
     }
 
+    getYearFraction(utcDate) {
+      const fullYear = utcDate.getFullYear()
+      const fullYearStart = new Date('' + fullYear)
+      const fullYearEnd = new Date('' + (fullYear + 1))
+      return fullYear + (fullYearStart - utcDate) / (fullYearEnd - fullYearStart)
+    }
 
-    addEventsToChart() {
-      let rangeStart = this.start
-      let range = this.range
-      if (this.type === 'UTC') {
-        rangeStart = this.start.getTime() / dayMs
-        range = range / dayMs
-      }
+
+    displayEvents() {
       this.events.forEach(event => {
+
         const eventElement = document.createElement('div');
         eventElement.dataset.id = event.id
         eventElement.className = 'timeline-event'
-        let start = event.start
-        let end = event.end
-        if (this.type === 'UTC') {
-          start = event.start.getTime() / dayMs
-          end = event.end.getTime() / dayMs
+
+        // Start and end years as full years or fractions (if UTC dates)
+        let start
+        let end
+        if (event.type === 'UTC') {
+          start = this.getYearFraction(event.start)
+          end = this.getYearFraction(event.end)
+        } else {
+          start = event.start
+          end = event.end
         }
-        const leftPercent = 100 * (start - rangeStart) / range
+        // console.log('start=', start, 'end=', end)
+
+        const leftPercent = 100 * (start - this.startYear) / this.range
+        const widthPercent = 100 * Math.abs((end - start)) / this.range
+
+        // console.log(event.title + ' widthPercent', widthPercent)
+
         eventElement.style.marginLeft = `${leftPercent}%`;
-        eventElement.style.width = `${100 * (end - start) / range}%`
+        eventElement.style.width = `${widthPercent}%`
+
         const categoryIndex = this.categories.findIndex(category => event.category === category)
         if (categoryIndex !== -1) {
           if (this.categoryColours.length > 0) {
@@ -417,12 +435,9 @@ document.addEventListener('DOMContentLoaded', function () {
       this.selectedEventId = eventElement.dataset.id
       const event = this.events[this.selectedEventId]
       const citations = event.citations.replace(regex, subst);
-      const start = this.type === 'UTC' ? event.start.toLocaleDateString() : this.displayDate(event.start)
-      const end = event.ongoing ? 'date' :
-        (this.type === 'UTC' ? event.end.toLocaleDateString() : this.displayDate(event.end))
       this.timelineSummaryText.innerHTML =
         `<h4>${event.title}</h4>` +
-        `<h5>${start} - ${end}</h5>` +
+        `<h5>${event.startString} - ${event.endString}</h5>` +
         `<div>${event.summary}</div>` +
         '<h5>Citations</h5>' +
         citations

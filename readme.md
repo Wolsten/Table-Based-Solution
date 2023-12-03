@@ -1,4 +1,5 @@
 # Table Timeline
+
 30/11/2023
 
 ## Introduction
@@ -9,22 +10,22 @@ A timeline table should be structured as a simple table composed of TABLE, TR an
 
 ## Installation
 
-The main files you need are the javascript module ```table-timeline.js``` and the css file ```style.css```.
+The main files you need are the javascript module `table-timeline.js` and the css file `style.css`.
 
 Link the css file in the head of your page:
 
-```<link rel="stylesheet" href="style.css">```
+`<link rel="stylesheet" href="style.css">`
 
 and add the script tag at the end of the page body:
 
-```<script src="table-timeline.js"></script>```
+`<script src="table-timeline.js"></script>`
 
 ## Usage
 
 ```
-<table 
-    class="timeline-table" 
-    id="timeline name" 
+<table
+    class="timeline-table"
+    id="timeline name"
     data-category-colours="white;hsl(220, 40%, 50%);hsl(220, 60%, 60%);hsl(220, 80%, 70%);hsl(60, 60%, 40%);hsl(60, 90%, 70%);hsl(0, 80%, 80%)">
     <tr>
         <td>Event name</td>
@@ -37,18 +38,18 @@ and add the script tag at the end of the page body:
 </table>
 ```
 
-Timeline tables are identified with the class ```timeline-table``` and named via their ```id```. They also have an optional attribute ```data-category-colours``` which lists the colours for each category of event. If not provided a set of default colours will be used. These are specified in the ```style.css``` file and can of course be overridden.
+Timeline tables are identified with the class `timeline-table` and named via their `id`. They also have an optional attribute `data-category-colours` which lists the colours for each category of event. If not provided a set of default colours will be used. These are specified in the `style.css` file and can of course be overridden.
 
 Dates can be formatted in a number of ways:
 
-* Year, *e.g. 2023*
-* UTC date, *e.g. 2023-12-25*
-* Christian era, *e.g. 100BC and 2023BC*
-* Geologic, *e.g. 4.5bya, where units can be bya, mya and tya*
+-   Year, _e.g. 2023_
+-   UTC date, _e.g. 2023-12-25_
+-   Christian era, _e.g. 100BC and 2023BC_
+-   Geologic, _e.g. 4.5bya, where units can be bya, mya and tya_
 
 Christian era and geologic indicators are case-insensitive.
 
-Each timeline should use the same method. Ongoing events are specified by setting their end date to the word **date**.
+Each timeline can mix date types for different events. Ongoing events are specified by setting their end date to the word **date** or **-**. Events can just have a start time (i.e. instants), in which case the end date should be left blank.
 
 There is also a node script for converting an Excel spreadsheet table into the equivalent HTML page to display as a graphical timeline.
 
