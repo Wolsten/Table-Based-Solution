@@ -44,10 +44,11 @@ Dates can be formatted in a number of ways:
 
 -   Year, _e.g. 2023_
 -   UTC date, _e.g. 2023-12-25_
--   Christian era, _e.g. 100BC and 2023BC_
+-   Gregorian calendar, _e.g. 100BC and 2023BC_
+-   Common era, e.g. _e.g. 100BCE and 2023BE_
 -   Geologic, _e.g. 4.5bya, where units can be bya, mya and tya_
 
-Christian era and geologic indicators are case-insensitive.
+Gregorian, common era and geologic indicators are case-insensitive.
 
 Each timeline can mix date types for different events. Ongoing events are specified by setting their end date to the word **date** or **-**. Events can just have a start time (i.e. instants), in which case the end date should be left blank.
 

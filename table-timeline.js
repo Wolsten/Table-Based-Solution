@@ -386,7 +386,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // console.log('start=', start, 'end=', end)
 
         const leftPercent = 100 * (start - this.startYear) / this.range
-        const widthPercent = 100 * Math.abs((end - start)) / this.range
+        let widthPercent = 100 * Math.abs((end - start)) / this.range
+        if ( widthPercent < 0.3 ) widthPercent = 0.3
 
         // console.log(event.title + ' widthPercent', widthPercent)
 
