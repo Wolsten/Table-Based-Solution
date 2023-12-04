@@ -1,3 +1,5 @@
+"use strict"
+
 document.addEventListener('DOMContentLoaded', function () {
 
   const timelines = []
@@ -41,8 +43,8 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       this.buildDomElements()
       const customStyle = timelineTable.querySelector('style')
-      if ( customStyle ) {
-        this.timelineStyle.innerHTML = customStyle.innerHTML.replace( 'table', '.timeline-container')
+      if (customStyle) {
+        this.timelineStyle.innerHTML = customStyle.innerHTML.replace('table', '.timeline-container')
         customStyle.remove()
       }
       this.readEvents()
@@ -108,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
       this.timelineSummaryCloseButton.addEventListener('click', () => this.clearSummary())
     }
 
+
     readEvents() {
       Array.from(this.eventsTable.getElementsByTagName('tr')).forEach((row, index) => {
         const cells = row.getElementsByTagName('td');
@@ -120,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
           if (endString === 'date' || endString === '-') {
             endString = 'date'
           } else if (end.type === 'UTC') {
-            endString = start.when.toLocaleDateString()
+            endString = end.when.toLocaleDateString()
           }
 
           const event = {
@@ -137,11 +140,11 @@ document.addEventListener('DOMContentLoaded', function () {
           }
 
           // Check for earliest date
-          if (!this.start || event.start < this.start ) {
+          if (!this.start || event.start < this.start) {
             this.start = event.type === 'UTC' ? new Date(event.start) : event.start
           }
           // Check for latest date
-          if (!this.end || event.end > this.end ) {
+          if (!this.end || event.end > this.end) {
             this.end = event.type === 'UTC' ? new Date(event.end) : event.end
           }
           // Collect new categories
@@ -149,8 +152,8 @@ document.addEventListener('DOMContentLoaded', function () {
           this.events.push(event)
         }
       })
-      //console.table(this.events)
-      //console.log('range',this.start,this.end)
+      // console.table(this.events)
+      // console.log('range',this.start,this.end)
     }
 
     addXAxis() {
@@ -224,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
           if (start.type === 'UTC') {
             when = new Date()
             when.setUTCHours(12, 0, 0, 0)
-          } else if (start.type === 'billionYearsAgo' || start.type === 'thousandYearsAgo' || start.yype === 'thousandYearsAgo') {
+          } else if (start.type === 'billionYearsAgo' || start.type === 'thousandYearsAgo' || start.type === 'thousandYearsAgo') {
             when = 0
           } else {
             when = new Date().getFullYear()
@@ -233,7 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
           return { type, when }
         }
 
-        // Check for "start-only" evets
+        // Check for "start-only" events
         if (stringDate === '') {
           return { ...start }
         }
@@ -401,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const leftPercent = 100 * (start - this.startYear) / this.range
         let widthPercent = 100 * Math.abs((end - start)) / this.range
-        if ( widthPercent < 0.3 ) widthPercent = 0.3
+        if (widthPercent < 0.3) widthPercent = 0.3
 
         eventElement.style.marginLeft = `${leftPercent}%`;
         eventElement.style.width = `${widthPercent}%`
@@ -412,10 +415,10 @@ document.addEventListener('DOMContentLoaded', function () {
             eventElement.style.backgroundColor = this.categoryColours[categoryIndex]
           }
           eventElement.classList.add(`category-${categoryIndex}`)
-          eventElement.dataset.categoryIndex = categoryIndex;    
+          eventElement.dataset.categoryIndex = categoryIndex;
         }
 
-        if (leftPercent+widthPercent > 50) {
+        if (leftPercent + widthPercent > 50) {
           eventElement.classList.add('right')
         }
         eventElement.innerHTML = `<div class="title">${event.title}</div>`
@@ -442,16 +445,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     showSummary(eventElement) {
-      const regex = /(https?:\/\/[\w.?=&\/;]+)/gm
+      const regex = /(https?:\/\/[\w.,-_?=&\/;]+)/gm
       const subst = `<a href="$1">$1</a>`;
       // Save instance for use in clearing summary
       eventElement.classList.add('selected')
       this.selectedEventId = eventElement.dataset.id
       const event = this.events[this.selectedEventId]
       const citations = event.citations.replace(regex, subst);
+      const dates = event.startString !== event.endString
+        ? `${event.startString} - ${event.endString}`
+        : event.startString
       this.timelineSummaryText.innerHTML =
-        `<h4>${event.title}</h4>` +
-        `<h5>${event.startString} - ${event.endString}</h5>` +
+        `<h4>${event.title} (${event.category})</h4>` +
+        `<h5>${dates}</h5>` +
         `<div>${event.summary}</div>` +
         '<h5>Citations</h5>' +
         citations
