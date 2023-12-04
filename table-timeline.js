@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', function () {
     eventsTable
     minPosition
     maxPosition
+    start
+    end
     startYear
     endYear
     range
@@ -31,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     constructor(timelineTable) {
       this.eventsTable = timelineTable
-      console.log(this.eventsTable)
+      // console.log(this.eventsTable)
       this.tableData = Array.from(this.eventsTable.getElementsByTagName('tr'))
       if (timelineTable.dataset.categoryColours) {
         this.categoryColours = timelineTable.dataset.categoryColours.split(';')
@@ -108,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
           } else if (end.type === 'UTC') {
             endString = start.when.toLocaleDateString()
           }
+
           const event = {
             id: index - 1, // First row are headers
             title: cells[0].innerText.trim(),
@@ -120,13 +123,18 @@ document.addEventListener('DOMContentLoaded', function () {
             summary: cells[4].innerHTML,
             citations: cells[5].innerHTML
           }
-          //console.log('event', event.title)
+
+          // if ( index === 1){
+          //   console.log(event)
+          //   debugger
+          // }
+
           // Check for earliest date
-          if (!this.start || this.start > event.start) {
+          if (!this.start || event.start < this.start ) {
             this.start = event.type === 'UTC' ? new Date(event.start) : event.start
           }
           // Check for latest date
-          if (!this.endYear || this.endYear < event.end) {
+          if (!this.end || event.end > this.end ) {
             this.end = event.type === 'UTC' ? new Date(event.end) : event.end
           }
           // Collect new categories
@@ -135,6 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       })
       //console.table(this.events)
+      console.log('range',this.start,this.end)
     }
 
     addXAxis() {
@@ -153,8 +162,8 @@ document.addEventListener('DOMContentLoaded', function () {
       }
       this.endYear = year
       this.range = this.endYear - this.startYear
-      console.log('Ranged start year = ', this.startYear)
-      console.log('Ranged year end =', this.endYear)
+      // console.log('Ranged start year = ', this.startYear)
+      // console.log('Ranged year end =', this.endYear)
       // console.table(labels)
       this.timelineXAxis.innerHTML = ''
       labels.forEach((label, index) => {
@@ -279,9 +288,8 @@ document.addEventListener('DOMContentLoaded', function () {
       const yearRegexPattern = /^([0-9]+)$/
       matchResult = yearRegexPattern.exec(stringDate)
       if (matchResult !== null) {
-        type = 'gregorian'
-        const sign = matchResult[2].toLowerCase() === 'bc' ? -1 : 1
-        when = sign * matchResult[1]
+        type = 'plain'
+        when = parseInt(matchResult[1])
         return { type, when }
       }
 
@@ -471,7 +479,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Initialisation
   const timelineTables = document.getElementsByClassName('timeline-table')
-  console.log('event tables', timelineTables)
+  // console.log('event tables', timelineTables)
   Array.from(timelineTables).forEach(table => {
     timelines.push(new Timeline(table));
   })
