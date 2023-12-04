@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       })
       //console.table(this.events)
-      console.log('range',this.start,this.end)
+      // console.log('range',this.start,this.end)
     }
 
     addXAxis() {
@@ -391,13 +391,10 @@ document.addEventListener('DOMContentLoaded', function () {
           start = event.start
           end = event.end
         }
-        // console.log('start=', start, 'end=', end)
 
         const leftPercent = 100 * (start - this.startYear) / this.range
         let widthPercent = 100 * Math.abs((end - start)) / this.range
         if ( widthPercent < 0.3 ) widthPercent = 0.3
-
-        // console.log(event.title + ' widthPercent', widthPercent)
 
         eventElement.style.marginLeft = `${leftPercent}%`;
         eventElement.style.width = `${widthPercent}%`
@@ -410,7 +407,7 @@ document.addEventListener('DOMContentLoaded', function () {
           eventElement.classList.add(`category-${categoryIndex}`)
           eventElement.dataset.categoryIndex = categoryIndex;
         }
-        if (leftPercent > 50) {
+        if (leftPercent+widthPercent > 50) {
           eventElement.classList.add('right')
         }
         eventElement.innerHTML = `<div class="title">${event.title}</div>`
