@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     id = generateRandomId()
     timelineContainer
+    timelineStyle
     timelineTitle
     timelineContent
     timelineSummaryContainer
@@ -39,6 +40,11 @@ document.addEventListener('DOMContentLoaded', function () {
         this.categoryColours = timelineTable.dataset.categoryColours.split(';')
       }
       this.buildDomElements()
+      const customStyle = timelineTable.querySelector('style')
+      if ( customStyle ) {
+        this.timelineStyle.innerHTML = customStyle.innerHTML.replace( 'table', '.timeline-container')
+        customStyle.remove()
+      }
       this.readEvents()
       this.addFilterControls()
       this.addXAxis()
@@ -49,6 +55,8 @@ document.addEventListener('DOMContentLoaded', function () {
     buildDomElements() {
       const html =
         `<div class="timeline-container" id="${this.id}">
+
+          <style class="timeline-style"></style>
 
           <div class="timeline-title">${this.eventsTable.title}</div>
 
@@ -83,6 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>`
       this.eventsTable.insertAdjacentHTML("afterend", html)
       this.timelineContainer = document.getElementById(this.id)
+      this.timelineStyle = this.timelineContainer.querySelector(".timeline-style")
       this.timelineTitle = this.timelineContainer.querySelector(".timeline-title")
       this.timelineContent = this.timelineContainer.querySelector(".timeline-content")
       this.timelineSummaryContainer = this.timelineContainer.querySelector(".timeline-summary-container")
@@ -124,11 +133,6 @@ document.addEventListener('DOMContentLoaded', function () {
             citations: cells[5].innerHTML
           }
 
-          // if ( index === 1){
-          //   console.log(event)
-          //   debugger
-          // }
-
           // Check for earliest date
           if (!this.start || event.start < this.start ) {
             this.start = event.type === 'UTC' ? new Date(event.start) : event.start
@@ -143,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       })
       //console.table(this.events)
-      // console.log('range',this.start,this.end)
+      //console.log('range',this.start,this.end)
     }
 
     addXAxis() {
@@ -405,8 +409,9 @@ document.addEventListener('DOMContentLoaded', function () {
             eventElement.style.backgroundColor = this.categoryColours[categoryIndex]
           }
           eventElement.classList.add(`category-${categoryIndex}`)
-          eventElement.dataset.categoryIndex = categoryIndex;
+          eventElement.dataset.categoryIndex = categoryIndex;    
         }
+
         if (leftPercent+widthPercent > 50) {
           eventElement.classList.add('right')
         }

@@ -21,7 +21,6 @@ body {
 
 .timeline-container {
     --timeline-height: 500px;
-    --colour-category-0: white;
     --colour-category-1: hsl(220, 70%, 57%);
     --colour-category-2: hsl(316, 60%, 60%);
     --colour-category-3: hsl(108, 80%, 70%);
@@ -33,9 +32,6 @@ body {
     --colour-category-9: hsl(313, 40%, 37%);
 
     .timeline-categories {
-        /* .category-0 {
-            border-bottom: 5px solid var(--colour-category-0);
-        } */
         .category-1 {
             border-bottom: 5px solid var(--colour-category-1);
         }
@@ -66,9 +62,6 @@ body {
     }
 
     .timeline-events {
-        /* .category-0 {
-            background-color: var(--colour-category-0);
-        } */
         .category-1 {
             background-color: var(--colour-category-1);
         }
@@ -103,6 +96,9 @@ body {
     padding: 1rem;
     background-color: rgb(230, 236, 230);
 }
+
+
+
 
 .timeline-title {
     width: 100%;

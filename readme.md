@@ -1,6 +1,6 @@
 # Table Timeline
 
-30/11/2023
+4th Dec 2023
 
 ## Introduction
 
@@ -23,10 +23,19 @@ and add the script tag at the end of the page body:
 ## Usage
 
 ```
-<table
-    class="timeline-table"
-    id="timeline name"
-    data-category-colours="white;hsl(220, 40%, 50%);hsl(220, 60%, 60%);hsl(220, 80%, 70%);hsl(60, 60%, 40%);hsl(60, 90%, 70%);hsl(0, 80%, 80%)">
+<table class="timeline-table" title="timeline name">
+
+    [<style>
+            table {
+                --colour-category-1: hsl(123, 70%, 57%);
+                --colour-category-2: hsl(194, 60%, 60%);
+                --colour-category-3: hsl(221, 80%, 70%);
+                --colour-category-4: hsl(300, 63%, 46%);
+                --colour-category-5: hsl(60, 90%, 70%);
+                --colour-category-6: hsl(0, 85%, 47%); 
+            }
+    </style>]
+
     <tr>
         <td>Event name</td>
         <td>Start</td>
@@ -38,7 +47,7 @@ and add the script tag at the end of the page body:
 </table>
 ```
 
-Timeline tables are identified with the class `timeline-table` and named via their `id`. They also have an optional attribute `data-category-colours` which lists the colours for each category of event. If not provided a set of default colours will be used. These are specified in the `style.css` file and can of course be overridden.
+Timeline tables are identified with the class `timeline-table` and named via their `title` attribute. They also have an optional `styles` tag which can be used to override the colours for each category of event. If not provided a set of default colours will be used. These are specified in the `style.css` file.
 
 Dates can be formatted in a number of ways:
 
@@ -52,11 +61,9 @@ Gregorian, common era and geologic indicators are case-insensitive.
 
 Each timeline can mix date types for different events. Ongoing events are specified by setting their end date to the word **date** or **-**. Events can just have a start time (i.e. instants), in which case the end date should be left blank.
 
-There is also a node script for converting an Excel spreadsheet table into the equivalent HTML page to display as a graphical timeline.
+There is also a node script for converting an Excel spreadsheet table into the equivalent HTML page to display as a graphical timeline. This does not support custom style attributes at present.
 
-## Licence
-
-MIT License
+## MIT Licence
 
 Copyright (c) 2023 Stephen John Davison
 
