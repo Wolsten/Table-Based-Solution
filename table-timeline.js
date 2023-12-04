@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
               <div class="timeline-summary-text"></div>
 
-              <button class="timeline-summary-close-button">Close</button>
+              <button class="timeline-summary-close-button">X</button>
 
             </div>
           
@@ -98,6 +98,9 @@ document.addEventListener('DOMContentLoaded', function () {
       this.timelineSummaryText = this.timelineContainer.querySelector(".timeline-summary-text")
       this.timelineSummaryCloseButton = this.timelineContainer.querySelector(".timeline-summary-close-button")
       this.timelineChartContainer = this.timelineContainer.querySelector(".timeline-chart-container")
+
+      // this.timelineChartContainer.style.width = "1000px";
+
       this.timelineEvents = this.timelineContainer.querySelector(".timeline-events")
       this.timelineXAxis = this.timelineContainer.querySelector(".timeline-x-axis")
       this.timelineFilterControls = this.timelineContainer.querySelector(".timeline-filter-controls")
