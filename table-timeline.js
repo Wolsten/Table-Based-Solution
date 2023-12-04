@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
           <style class="timeline-style"></style>
 
-          <div class="timeline-title">${this.eventsTable.title}</div>
+          <h1 class="timeline-title">${this.eventsTable.title}</h1>
 
           <div class="timeline-filter-controls">
             <div class="timeline-categories-group">
@@ -456,10 +456,10 @@ document.addEventListener('DOMContentLoaded', function () {
         ? `${event.startString} - ${event.endString}`
         : event.startString
       this.timelineSummaryText.innerHTML =
-        `<h4>${event.title} (${event.category})</h4>` +
-        `<h5>${dates}</h5>` +
+        `<h2>${event.title} <span class="timeline-summary-title-small">(${event.category})</span></h2>` +
+        `<div class="timeline-summary-dates">${dates}</div>` +
         `<div>${event.summary}</div>` +
-        '<h5>Citations</h5>' +
+        '<h3>Citations</h3>' +
         citations
       this.timelineContent.classList.add('show')
     }
