@@ -25,6 +25,7 @@ body {
     --colour-background: hsl(120, 10%, 90%);
     --colour-summary-background: hsl(120, 10%, 80%);
 
+    --colour-category-0: hsl(240, 1%, 14%);
     --colour-category-1: hsl(220, 70%, 57%);
     --colour-category-2: hsl(316, 60%, 60%);
     --colour-category-3: hsl(108, 80%, 70%);
@@ -73,6 +74,9 @@ body {
     }
 
     .timeline-events {
+        .timeline-event {
+            background-color: var(--colour-category-0);
+        }
         .category-1 {
             background-color: var(--colour-category-1);
         }
@@ -265,7 +269,7 @@ h2 .timeline-summary-title-small {
     position: relative;
     height: 1.6rem;
     overflow: visible;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 5px 5px 5px var(--colour-summary-background);
     margin-top: 0.3rem;
     cursor: pointer;
 
@@ -285,8 +289,11 @@ h2 .timeline-summary-title-small {
         text-align: right;
     }
 
-    &.selected .title {
-        font-weight: bold;
+    &.selected {
+        opacity: 0.7;
+        .title {
+            font-weight: bold;
+        }
     }
 
     transition: opacity, height 0.4s ease-in-out;
@@ -301,6 +308,7 @@ h2 .timeline-summary-title-small {
     width: 100%;
     display: flex;
     justify-content: space-between;
+    margin-top: 0.5rem;
 }
 
 .timeline-x-axis div {

@@ -26,7 +26,7 @@ function excelToHtml(sheetName, sheet) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="style.css">
-        <title>Document</title>
+        <title>${sheetName}</title>
     </head>
     <body><p><a href='/'>Home</a></p>` +
     `<table class="timeline-table" title="${sheetName}">` +

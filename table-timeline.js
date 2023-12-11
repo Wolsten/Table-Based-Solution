@@ -19,7 +19,9 @@ document.addEventListener('DOMContentLoaded', function () {
     timelineEvents
     timelineXAxis
     timelineFilterControls
+    timelineCategoriesGroup
     timelineCategories
+    timelineSearchGroup
     eventsTable
     minPosition
     maxPosition
@@ -82,16 +84,19 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
           
             <div class="timeline-chart-container">
-            
-              <div class="timeline-events"></div>
 
-              <div class="timeline-x-axis"></div>
+              <div class="timeline-zomm-panel">
+                <div class="timeline-events"></div>
+                <div class="timeline-x-axis"></div>
+              </div>
+
             </div>
 
           </div>
 
         </div>`
       this.eventsTable.insertAdjacentHTML("afterend", html)
+
       this.timelineContainer = document.getElementById(this.id)
       this.timelineStyle = this.timelineContainer.querySelector(".timeline-style")
       this.timelineTitle = this.timelineContainer.querySelector(".timeline-title")
@@ -100,13 +105,12 @@ document.addEventListener('DOMContentLoaded', function () {
       this.timelineSummaryText = this.timelineContainer.querySelector(".timeline-summary-text")
       this.timelineSummaryCloseButton = this.timelineContainer.querySelector(".timeline-summary-close-button")
       this.timelineChartContainer = this.timelineContainer.querySelector(".timeline-chart-container")
-
-      // this.timelineChartContainer.style.width = "1000px";
-
       this.timelineEvents = this.timelineContainer.querySelector(".timeline-events")
       this.timelineXAxis = this.timelineContainer.querySelector(".timeline-x-axis")
       this.timelineFilterControls = this.timelineContainer.querySelector(".timeline-filter-controls")
-      this.timelineCategories = this.timelineContainer.querySelector(".timeline-categories")
+      this.timelineCategoriesGroup = this.timelineFilterControls.querySelector(".timeline-categories-group")
+      this.timelineCategories = this.timelineFilterControls.querySelector(".timeline-categories")
+      this.timelineSearchGroup = this.timelineFilterControls.querySelector(".timeline-search-group")
       this.timelineSummaryCloseButton.addEventListener('click', () => this.clearSummary())
     }
 
@@ -148,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
             this.end = event.type === 'UTC' ? new Date(event.end) : event.end
           }
           // Collect new categories
-          if (!this.categories.includes(event.category)) this.categories.push(event.category)
+          if (event.category !== '' && !this.categories.includes(event.category)) this.categories.push(event.category)
           this.events.push(event)
         }
       })
@@ -349,31 +353,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     addFilterControls() {
-      this.timelineCategories.innerHTML = this.categories.map((category, index) => {
-        const colour = this.categoryColours.length > 0 ? `style="border: 1px solid ${this.categoryColours[index]};"` : ''
-        return `<label class="timeline-category category-${index}" ${colour}>${category}
+      // Categories
+      // By default there will always be the All category, so need at least three to make worth while
+      if (this.categories.length <= 2) {
+        this.timelineCategoriesGroup.remove()
+      } else {
+        this.timelineCategories.innerHTML = this.categories.map((category, index) => {
+          const colour = this.categoryColours.length > 0 ? `style="border: 1px solid ${this.categoryColours[index]};"` : ''
+          return `<label class="timeline-category category-${index}" ${colour}>${category}
             <input type="checkbox" name="category[${index}]" value="${index}" checked />
           </label>`
-      }).join('')
+        }).join('')
+        // Event listener
+        this.timelineCategories.addEventListener('click', (evt) => {
+          const event = evt.target
+          console.log('Clicked', event.value, 'with value', event.checked)
+          this.filterByCategory(event)
+          this.clearSummary()
+        })
+      }
       // Text search
-      const textSearch = this.timelineFilterControls.querySelector(".timeline-search")
-      const textSearchClearButton = this.timelineFilterControls.querySelector(".timeline-search-clear-button")
-      // Event listeners
-      this.timelineCategories.addEventListener('click', (evt) => {
-        const event = evt.target
-        console.log('Clicked', event.value, 'with value', event.checked)
-        this.filterByCategory(event)
-        this.clearSummary()
-      })
-      textSearch.addEventListener('change', () => {
-        this.filterBySearchText(textSearch.value.toLowerCase())
-        this.clearSummary()
-      })
-      textSearchClearButton.addEventListener('click', () => {
-        textSearch.value = ''
-        this.filterBySearchText('')
-        this.clearSummary()
-      })
+      if (this.events.length < 10) {
+        this.timelineSearchGroup.remove()
+      } else {
+        const textSearch = this.timelineFilterControls.querySelector(".timeline-search")
+        const textSearchClearButton = this.timelineFilterControls.querySelector(".timeline-search-clear-button")
+        textSearch.addEventListener('change', () => {
+          this.filterBySearchText(textSearch.value.toLowerCase())
+          this.clearSummary()
+        })
+        textSearchClearButton.addEventListener('click', () => {
+          textSearch.value = ''
+          this.filterBySearchText('')
+          this.clearSummary()
+        })
+      }
     }
 
     getYearFraction(utcDate) {
@@ -451,16 +465,16 @@ document.addEventListener('DOMContentLoaded', function () {
       eventElement.classList.add('selected')
       this.selectedEventId = eventElement.dataset.id
       const event = this.events[this.selectedEventId]
-      const citations = event.citations.replace(regex, subst);
+      const citations = event.citations !== '' ? `<h3>Citations</h3> ${event.citations.replace(regex, subst)}` : ''
       const dates = event.startString !== event.endString
         ? `${event.startString} - ${event.endString}`
         : event.startString
+      const category = this.categories.length > 1 ? ` <span class="timeline-summary-title-small">(${event.category})</span>` : ''
       this.timelineSummaryText.innerHTML =
-        `<h2>${event.title} <span class="timeline-summary-title-small">(${event.category})</span></h2>` +
-        `<div class="timeline-summary-dates">${dates}</div>` +
-        `<div>${event.summary}</div>` +
-        '<h3>Citations</h3>' +
-        citations
+        `<h2>${event.title}${category}</h2>
+         <div class="timeline-summary-dates">${dates}</div>
+         <div>${event.summary}</div>
+         ${citations}`
       this.timelineContent.classList.add('show')
     }
 
