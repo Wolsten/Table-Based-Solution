@@ -212,6 +212,10 @@ body {
     margin-bottom: 0.5rem;
 }
 
+.timeline-summary-text blockquote {
+    font-style: italic;
+}
+
 .timeline-summary-dates {
     margin-bottom: 1rem;
 }
