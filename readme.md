@@ -1,53 +1,74 @@
 # Table Timeline
 
-4th Dec 2023
+22nd Feb 2024
 
 ## Introduction
 
-Table timeline is a simple Javascript program that takes a correctly structured HTML table and converts it into a graphical timeline and formatted with a custom stylesheet.
+Table timeline is a custom web component that takes a correctly structured HTML table and converts it into a graphical timeline and a prose version, formatted with a custom stylesheet. Implementing the timeline as a table means that a timeline can be indexed without the javascript component being triggered.
 
-A timeline table should be structured as a simple table composed of TABLE, TR and TD tags as follows:
+An Excel workbook is also provided which supports the automatic generation of either html or markdown files from timelines stored as separate worksheets in the workbook.
+
+To generate a number of sample timelines and an index file, open the workbook, go to sheet "ToC" and click **Export** button.
 
 ## Installation
 
-The main files you need are the javascript module `table-timeline.js` and the css file `style.css`.
+The main files you need are the javascript module `timeline.js` and the css file `timneline.css`.
 
-Link the css file in the head of your page:
+Add the script tag to the `<head>` section, using the `defer` attribute:
 
-`<link rel="stylesheet" href="style.css">`
+`<script src="/timeline.js" defer></script>`
 
-and add the script tag at the end of the page body:
-
-`<script src="table-timeline.js"></script>`
 
 ## Usage
 
 ```
-<table class="timeline-table" title="timeline name">
+<figure is='my-timeline' data-view='chart|text' [data-cssurl='url']>
 
+    <!-- Optional style section to override colours for -->
     [<style>
             table {
-                --colour-category-1: hsl(123, 70%, 57%);
-                --colour-category-2: hsl(194, 60%, 60%);
-                --colour-category-3: hsl(221, 80%, 70%);
-                --colour-category-4: hsl(300, 63%, 46%);
-                --colour-category-5: hsl(60, 90%, 70%);
-                --colour-category-6: hsl(0, 85%, 47%); 
+                --tag-name-x: hsl(123, 70%, 57%);
+                --tag-name-y: hsl(194, 60%, 60%);
+                --tag-name-z: hsl(221, 80%, 70%);
             }
     </style>]
 
-    <tr>
-        <td>Event name</td>
-        <td>Start</td>
-        <td>End date</td>
-        <td>Category</td>
-        <td>Summary</td>
-        <td>Citations</td>
-    </tr>
-</table>
+    <table>
+
+        <!-- Table head -->
+        <thead>
+            <tr>
+                <th>title</th>
+                <th>start</th>
+                <th>end</th>
+                <th>tag</th>
+                <th>content</th>
+                <th>citations</th>
+                <th>link</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <!-- Event rows -->
+            <tr>
+                <th>event title</th>
+                <th>event start</th>
+                <th>event end</th>
+                <th>event tag</th>
+                <th>event content</th>
+                <th>event citations</th>
+                <th>event link</th>
+            <tr>
+
+        </tbody>
+
+    </table>
+
+<figcaption>Timeline Title</figcaption>
 ```
 
-Timeline tables are identified with the class `timeline-table` and named via their `title` attribute. They also have an optional `styles` tag which can be used to override the colours for each category of event. If not provided a set of default colours will be used. These are specified in the `style.css` file.
+Timeline figures are identified with the is property `my-timeline` and named via the `figcaption` tag at the end of the figure. They also have an optional `styles` tag which can be used to override the colours for each category of event. If not provided a set of default colours will be used. These are specified in the `timeline.css` file. An optional `data-cssurl` parameter may also be specified so that the `timeline.css` file can be placed in different folder to the javascript component.
 
 Dates can be formatted in a number of ways:
 

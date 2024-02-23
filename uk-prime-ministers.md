@@ -1,15 +1,16 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Timeline - UK Prime Ministers</title>
-<script src="/timeline.js" defer></script>
-</head>
-<body>
-<h1>Timeline - UK Prime Ministers</h1>
-<p><a href="/">Home</a></p>
+---
+title: UK Prime Ministers
+date: 23/02/2024
+tags: [whig,tory,conservative,peelite,liberal,labour]
+categories: [politics]
+summary: A full timeline of UK prime ministers
+image: 
+draft: false
+---
+# Timeline - UK Prime Ministers
+(Home)[/]
+{{< rawhtml >}}
 <figure is='my-timeline' data-view='chart' ><table><thead><tr><th>title</th><th>start</th><th>end</th><th>tag</th><th>content</th><th>citations</th><th>link</th></tr></thead><tbody><tr><td>Robert Walpole</td><td>1721-04-03</td><td>1742-02-11</td><td>whig</td><td>Robert Walpole, 1st Earl of Orford, KG PC (26 August 1676 Ð 18 March 1745; known between 1725 and 1742 as Sir Robert Walpole) was a British statesman and Whig politician who is generally regarded as the de facto first Prime Minister of Great Britain.
 </td><td>https://en.wikipedia.org/wiki/Robert_Walpole</td><td></td></tr><tr><td>Spencer Compton, 1st Earl of Wilmington</td><td>1742-02-16</td><td>1743-07-02</td><td>whig</td><td>Spencer Compton, 1st Earl of Wilmington, KG, PC (c._ 1674ÊÐ 2 July 1743)[1] was a British Whig statesman who served continuously in government from 1715 until his death. He sat in the English and British House of Commons between 1698 and 1728, and was then raised to the peerage and sat in the House of Lords. He served as the prime minister of Great Britain from 1742 until his death in 1743. He is considered to have been Britain's second prime minister, after Robert Walpole, but worked closely with the Secretary of State, Lord Carteret, in order to secure the support of the various factions making up the government.
 </td><td>https://en.wikipedia.org/wiki/Spencer_Compton,_1st_Earl_of_Wilmington</td><td></td></tr><tr><td>Henry Pelham</td><td>1743-08-27</td><td>1754-03-06</td><td>whig</td><td>Henry Pelham FRS (25 September 1694 Ð 6 March 1754) was a British Whig statesman who served as Prime Minister of Great Britain from 1743 until his death in 1754. He was the younger brother of Thomas Pelham-Holles, 1st Duke of Newcastle, who served in Pelham's government and succeeded him as prime minister. Pelham is generally considered to have been Britain's third prime minister, after Robert Walpole and the Earl of Wilmington.
@@ -89,5 +90,4 @@
 </td><td>https://en.wikipedia.org/wiki/Theresa_May</td><td></td></tr><tr><td>Boris Johnson</td><td>2019-07-24</td><td>2022-09-06</td><td>conservative</td><td>Alexander Boris de Pfeffel Johnson (born 19 June 1964) is a British politician who served as Prime Minister of the United Kingdom and Leader of the Conservative Party from 2019 to 2022. He previously served as Secretary of State for Foreign and Commonwealth Affairs from 2016 to 2018 and as Mayor of London from 2008 to 2016. Johnson has been Member of Parliament (MP) for Uxbridge and South Ruislip since 2015, having previously been MP for Henley from 2001 to 2008.
 </td><td>https://en.wikipedia.org/wiki/Boris_Johnson</td><td></td></tr><tr><td>Liz Truss</td><td>2022-09-06</td><td>2022-10-25</td><td>conservative</td><td>Mary Elizabeth Truss (born 26 July 1975) is a British politician who served as Prime Minister of the United Kingdom and Leader of the Conservative Party from September to October 2022. She resigned amid a financial and political crisis after 50 days in office, making her the shortest-serving Prime Minister in the history of the United Kingdom. She previously served in various Cabinet positions under Prime Ministers David Cameron, Theresa May and Boris Johnson, lastly as Foreign Secretary from 2021 to 2022. She has been Member of Parliament (MP) for South West Norfolk since 2010.
 </td><td>https://en.wikipedia.org/wiki/Liz_Truss</td><td></td></tr><tr><td>Rishi Sunak</td><td>2022-10-25</td><td>date</td><td>conservative</td><td>Rishi Sunak (born 12 May 1980) is a British politician who has served as Prime Minister of the United Kingdom since 25 October 2022 and Leader of the Conservative Party since 24 October 2022. Sunak served as Chancellor of the Exchequer from 2020 to 2022 and Chief Secretary to the Treasury from 2019 to 2020, and he has been Member of Parliament (MP) for Richmond (Yorks) since 2015.</td><td>https://en.wikipedia.org/wiki/Rishi_Sunak</td><td></td></tr></tbody></table><figcaption>UK Prime Ministers</figcaption></figure>
-</body>
-</html>
+{{< /rawhtml >}}"
