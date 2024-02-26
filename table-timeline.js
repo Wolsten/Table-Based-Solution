@@ -92,7 +92,7 @@ class TableTimeline extends HTMLElement {
         if (optionsString) {
             const options = optionsString.split(',')
             options.forEach(option => {
-                const parts = option.split('=')
+                const parts = option.split(':')
                 if (parts.length === 2) {
                     const opt = parts[0].trim()
                     let val = parts[1].trim()
