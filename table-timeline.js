@@ -1,7 +1,7 @@
 "use strict"
 
 // class MyCustomTimeline extends HTMLElement {
-class MyCustomTimeline extends HTMLElement {
+class TableTimeline extends HTMLElement {
 
     static DEFAULT_SORT
     static AXIS_YEARS
@@ -53,8 +53,8 @@ class MyCustomTimeline extends HTMLElement {
         // console.log('loc', window.location)
 
         this.shadow.innerHTML = /* html */`
-            <div class="my-timeline" data-view="${view}">
-                <link rel="stylesheet" href="${this.options.cssurl}timeline.css">
+            <div class="table-timeline" data-view="${view}">
+                <link rel="stylesheet" href="${this.options.cssurl}table-timeline.css">
                 ${customCSS}
                 ${filtersHtml}
                 <div class="container">
@@ -64,7 +64,7 @@ class MyCustomTimeline extends HTMLElement {
                         <div class="x-axis">${xAxisHtml}</div>
                     </div>
                 </div>
-            ${caption}
+                ${caption}
             </div>`
 
         // Reset the element pointers
@@ -86,7 +86,8 @@ class MyCustomTimeline extends HTMLElement {
             view: true,
             tags: true,
             sorting: true,
-            cssurl: ''
+            cssurl: '/',
+            test: false
         }
         if (optionsString) {
             const options = optionsString.split(',')
@@ -108,14 +109,17 @@ class MyCustomTimeline extends HTMLElement {
                         case 'sorting':
                             defaults.sorting = val === 'true'
                             break;
+                        case 'test':
+                            defaults.test = val === 'true'
+                            break;
                         case 'cssurl':
                             if (val !== '') {
                                 if (!val.endsWith('/')) {
                                     val += '/'
                                 }
+                                defaults.cssurl = val
+                                break;
                             }
-                            defaults.cssurl = val
-                            break;
                     }
                 }
             })
@@ -298,8 +302,9 @@ class MyCustomTimeline extends HTMLElement {
             })
             const link = event.link.trim()
             const url = link.toLowerCase().replace(/ /g, '-')
+            const ext = this.options.test ? ".html" : ''
             content += `<h4>Linked timeline</h4>`
-            content += `<a href="${prefix}${url}">${link}</a>`
+            content += `<a href="${prefix}${url}${ext}">${link}</a>`
         }
         const newEventElement = document.createElement('div')
         newEventElement.className = `event${textAlign}`
@@ -387,7 +392,7 @@ class MyCustomTimeline extends HTMLElement {
 
 
     addEventHandlers() {
-        const timelineDiv = this.shadow.querySelector('.my-timeline')
+        const timelineDiv = this.shadow.querySelector('.table-timeline')
         const containerDiv = timelineDiv.querySelector('.container')
         const summaryDiv = containerDiv.querySelector('.summary')
         const eventsDiv = containerDiv.querySelector('.events')
@@ -516,6 +521,7 @@ class MyCustomTimeline extends HTMLElement {
 
 
     convertLinks(inputString) {
+
         // Find all links not preceded by a quote (single or double)
         // This will prevent conversion of form actions and other
         // quoted links
@@ -652,4 +658,4 @@ class MyCustomTimeline extends HTMLElement {
     }
 }
 
-customElements.define("my-timeline", MyCustomTimeline, { extends: 'figure' })
+customElements.define("table-timeline", TableTimeline, { extends: 'figure' })

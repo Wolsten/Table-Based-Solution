@@ -4,11 +4,11 @@
 
 ## Introduction
 
-Table timeline is a custom web component that takes a correctly structured HTML table and converts it into a graphical timeline and a prose version, formatted with a custom stylesheet. Implementing the timeline as a table means that a timeline can be indexed without the javascript component being triggered.
+Table timeline is a custom web component that takes an appropriately structured HTML table and converts it into a graphical timeline as well as a prose version, formatted with a custom stylesheet. Implementing the timeline as a table means that a timeline can be indexed without the javascript component being triggered.
 
-An Excel workbook is also provided which supports the automatic generation of either html or markdown files from timelines stored as separate worksheets in the workbook.
+An Excel workbook is also provided which supports the automatic generation of either html or markdown files from timelines stored as separate worksheets in the workbook. The markdown files may be including in static site generators like [Hugo](https://gohugo.io).
 
-To generate a number of sample timelines and an index file, open the workbook, go to sheet "ToC" and click **Export** button.
+To generate a number of sample timelines and an index file, open the workbook, go to sheet `ToC` and click `Export` button.
 
 ## Installation
 
@@ -84,24 +84,7 @@ Each timeline can mix date types for different events. Ongoing events are specif
 
 There is also a node script for converting an Excel spreadsheet table into the equivalent HTML page to display as a graphical timeline. This does not support custom style attributes at present.
 
-## MIT Licence
 
-Copyright (c) 2023 Stephen John Davison
+## License
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+This project is licensed under the terms of the (MIT license)[https://github.com/Wolsten/Table-Timeline/blob/main/LICENSE.md].
