@@ -203,7 +203,7 @@
         margin-right: 0.3rem;
         top: 0.3rem;
     }
-    
+
     &[data-tag-index="0"] .tag::before {
         background-color: var(--colour-tag-0);
     }
@@ -310,6 +310,7 @@ figcaption {
     .content {
         margin-top: 0.5rem;
     }
+    border-bottom: 1px solid var(--colour-darker);
 }
 
 .table-timeline[data-view="chart"] {
