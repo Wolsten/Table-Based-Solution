@@ -136,7 +136,8 @@ class TableTimeline extends HTMLElement {
         const content = this.convertLinks(eventElement.querySelector('td:nth-child(5)').innerHTML.trim())
         const citations = eventElement.querySelector('td:nth-child(6)').innerHTML.trim()
         const link = eventElement.querySelector('td:nth-child(7)').innerHTML.trim()
-        return { title, start, end, tag, content, citations, link, margin: 0, width: 0, tagIndex: -1, element: null }
+        const image = eventElement.querySelector('td:nth-child(8)').innerHTML.trim()
+        return { title, start, end, tag, content, citations, link, image, margin: 0, width: 0, tagIndex: -1, element: null }
     }
 
 
@@ -306,19 +307,23 @@ class TableTimeline extends HTMLElement {
             content += `<h4>Linked timeline</h4>`
             content += `<a href="${prefix}${url}${ext}">${link}</a>`
         }
+        const img = event.image ? `<img src="${event.image}"/>` : ''
         const newEventElement = document.createElement('div')
         newEventElement.className = `event${textAlign}`
         newEventElement.setAttribute('data-tag-index', event.tagIndex)
         newEventElement.style = `margin-left: ${event.margin}%; width: ${event.width}%;`
         newEventElement.innerHTML = /* html */`
             <h3 class="title">${event.title}</h3>
-            <span class="dates">
-                <span class="start">
-                    ${event.start.formatted}
+            ${img}
+            <div class="dates-tag">
+                <span class="dates">
+                    <span class="start">
+                        ${event.start.formatted}
+                    </span>
+                    ${endDate}
                 </span>
-                ${endDate}
-            </span>
-            <span class="tag">${event.tag}</span>
+                <span class="tag">${event.tag}</span>
+            </div>
             <div class="content">
                 ${content}
             </div>`
@@ -503,12 +508,16 @@ class TableTimeline extends HTMLElement {
                     summaryDiv.style = `margin-top:${top}px`
                     const dates = event.element.querySelector('.dates').outerHTML
                     const content = event.element.querySelector('.content').innerHTML
+                    const image = event.image 
+                        ? /* html */ `<div class="summary-image"><img src="${event.image}" /></div>` 
+                        : ''
+                    const datesTag = event.element.querySelector('.dates-tag').outerHTML
                     summaryDiv.innerHTML = /* html */`
                         <button class="close">X</button>
                         <div class="content" data-tag-index="${event.tagIndex}">
-                            <h3>${event.title}</h3>
-                            ${dates}
-                            <span class="tag">${event.tag}</span>
+                            ${image}
+                            <h3 class="title">${event.title}</h3>
+                            ${datesTag}
                             <div class="body">
                                 ${content}
                             </div>
@@ -518,6 +527,10 @@ class TableTimeline extends HTMLElement {
             })
         })
     } // end addEventHandlers
+
+//                             ${dates}
+/* <span class="tag">${event.tag}</span> */
+
 
 
     convertLinks(inputString) {

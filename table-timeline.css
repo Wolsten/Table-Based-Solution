@@ -186,9 +186,12 @@
 /* Category indicators */
 .summary .content,
 .event {
+    .dates-tag {
+        display:flex;
+        justify-content: space-between;
+    }
     .tag {
         position: relative;
-        display: inline-block;
     }
     .tag::before {
         display: inline-block;
@@ -197,9 +200,10 @@
         color: transparent;
         height: 0.8rem;
         width: 0.8rem;
-        margin-right: 0.5rem;
-        top: 0.2rem;
+        margin-right: 0.3rem;
+        top: 0.3rem;
     }
+    
     &[data-tag-index="0"] .tag::before {
         background-color: var(--colour-tag-0);
     }
@@ -250,6 +254,9 @@
     }
     & h4 {
         margin: 1rem 0 0.5rem 0;
+    }
+    & img {
+        display:none;
     }
 }
 
@@ -321,6 +328,10 @@ figcaption {
         opacity: 0;
         background-color: var(--colour-lightest);
         transition: flex-basis ease-in-out 300ms, opacity ease-in-out 600ms;
+        overflow-wrap: break-word;
+        .summary-image {
+            display:none;
+        }
         .close {
             display: none;
             position: absolute;
@@ -335,8 +346,10 @@ figcaption {
                 background-color: var(--colour-normal);
             }
         }
-        .title {
+        .title,
+        & h4 {
             margin: 1rem 0 0.3rem 0;
+            color: var(--colour-darker);
         }
         .body {
             margin-top: 1rem;
@@ -349,11 +362,24 @@ figcaption {
             opacity: 1;
             visibility: visible;
             flex-basis: 50%;
+            max-width:50%;
             padding: 0.5rem;
             .close {
                 display: block;
                 color:var(--colour-darker);
                 font-size: 1rem;
+            }
+            .summary-image {
+                display:block;
+                height: 200px;
+                padding:1rem;
+                display:flex;
+                justify-content:center ;
+                & img {
+                    max-width:100%;
+                    max-height:200px;
+                    object-fit:cover;
+                }
             }
         }
         .events {
