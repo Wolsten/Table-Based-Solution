@@ -1,6 +1,6 @@
 # Table Timeline
 
-27nd Feb 2024
+27nd February 2024
 
 ## Introduction
 
