@@ -4,20 +4,9 @@
 
     --colour-darkest: hsl(120, 5%, 15%);
     --colour-darker: hsl(120, 5%, 50%);
-    --colour-normal: hsl(120, 5%, 60%);
-    --colour-lighter: hsl(120, 5%, 70%);
+    --colour-normal: hsl(120, 5%, 70%);
+    --colour-lighter: hsl(120, 5%, 80%);
     --colour-lightest: hsl(120, 5%, 98%);
-
-    --colour-tag-0: hsl(240, 1%, 38%);
-    --colour-tag-1: hsl(220, 70%, 57%);
-    --colour-tag-2: hsl(316, 60%, 60%);
-    --colour-tag-3: hsl(108, 80%, 70%);
-    --colour-tag-4: hsl(60, 63%, 46%);
-    --colour-tag-5: hsl(60, 90%, 70%);
-    --colour-tag-6: hsl(0, 14%, 36%);
-    --colour-tag-7: hsl(180, 63%, 68%);
-    --colour-tag-8: hsl(123, 37%, 50%);
-    --colour-tag-9: hsl(313, 40%, 37%);
 }
 
 
@@ -38,7 +27,7 @@
     line-height: 1.4rem;
 
     color: var(--colour-darkest);
-    background-color: var(--colour-normal);
+    background-color: var(--colour-lighter);
 }
 
 .filters {
@@ -49,7 +38,7 @@
     gap: 1.4rem;
     margin: 0 0 0.5rem 0;
     padding: 0 0 0.5rem 0;
-    border-bottom: 1px solid var(--colour-darker);
+    border-bottom: 1px solid var(--colour-normal);
 
     & form {
         display: flex;
@@ -62,14 +51,14 @@
             margin: 0;
             padding: 0.2rem 0.5rem;
             text-align: center;
-            border: 1px solid var(--colour-normal);
+            /* border: 1px solid var(--colour-normal); */
         }
 
         & label:not(:has(input[checked])) {
             background-color: var(--colour-normal);
             cursor: pointer;
             &:has(input[type="radio"]) {
-                border: 1px solid var(--colour-darker);
+                /* border: 1px solid var(--colour-darker); */
                 &:hover {
                     background-color: var(--colour-darker);
                 }
@@ -119,47 +108,9 @@
             }
             & label {
                 margin-right: 1rem;
-                --border-width: 6px;
-                &.tag-0 {
-                    border-bottom: var(--border-width) solid
-                        var(--colour-tag-0);
-                }
-                &.tag-1 {
-                    border-bottom: var(--border-width) solid
-                        var(--colour-tag-1);
-                }
-                &.tag-2 {
-                    border-bottom: var(--border-width) solid
-                        var(--colour-tag-2);
-                }
-                &.tag-3 {
-                    border-bottom: var(--border-width) solid
-                        var(--colour-tag-3);
-                }
-                &.tag-4 {
-                    border-bottom: var(--border-width) solid
-                        var(--colour-tag-4);
-                }
-                &.tag-5 {
-                    border-bottom: var(--border-width) solid
-                        var(--colour-tag-5);
-                }
-                &.tag-6 {
-                    border-bottom: var(--border-width) solid
-                        var(--colour-tag-6);
-                }
-                &.tag-7 {
-                    border-bottom: var(--border-width) solid
-                        var(--colour-tag-7);
-                }
-                &.tag-8 {
-                    border-bottom: var(--border-width) solid
-                        var(--colour-tag-8);
-                }
-                &.tag-9 {
-                    border-bottom: var(--border-width) solid
-                        var(--colour-tag-9);
-                }
+                border-bottom-width: 6px;
+                border-bottom-style: solid;
+                /* Individual tag colours specified in javascript */
             }
         }
 
@@ -171,7 +122,7 @@
             & input {
                 background-color: var(--colour-darker);
                 border: var(--border-width) solid
-                    var(--colour-darker);
+                    var(--colour-lighter);
                 padding: 0.3rem 0.5rem;
             }
         }
@@ -203,37 +154,7 @@
         margin-right: 0.3rem;
         top: 0.3rem;
     }
-
-    &[data-tag-index="0"] .tag::before {
-        background-color: var(--colour-tag-0);
-    }
-    &[data-tag-index="1"] .tag::before {
-        background-color: var(--colour-tag-1);
-    }
-    &[data-tag-index="2"] .tag::before {
-        background-color: var(--colour-tag-2);
-    }
-    &[data-tag-index="3"] .tag::before {
-        background-color: var(--colour-tag-3);
-    }
-    &[data-tag-index="4"] .tag::before {
-        background-color: var(--colour-tag-4);
-    }
-    &[data-tag-index="5"] .tag::before {
-        background-color: var(--colour-tag-5);
-    }
-    &[data-tag-index="6"] .tag::before {
-        background-color: var(--colour-tag-6);
-    }
-    &[data-tag-index="7"] .tag::before {
-        background-color: var(--colour-tag-7);
-    }
-    &[data-tag-index="8"] .tag::before {
-        background-color: var(--colour-tag-8);
-    }
-    &[data-tag-index="9"] .tag::before {
-        background-color: var(--colour-tag-9);
-    }
+    /* tag colours specified in javascript */
 }
 
 .event {
@@ -288,7 +209,7 @@ figcaption {
     margin: 1rem 0 0 0;
     text-align: center;
     font-weight: bold;
-    color: var(--colour-lightest);
+    color: var(--colour-darker);
 }
 
 .table-timeline[data-view="text"] .event {
@@ -394,39 +315,14 @@ figcaption {
     .event {
         position: relative;
         height: 1.6rem;
-        margin-bottom: 0.2rem;
         cursor: pointer;
         box-shadow: 0.2rem 0.2rem 0.2rem var(--colour-darker);
-        &[data-tag-index="0"] {
-            background-color: var(--colour-tag-0);
+
+        &:not(.hide):not(.not-matches) {
+            margin-bottom:0.3rem;
         }
-        &[data-tag-index="1"] {
-            background-color: var(--colour-tag-1);
-        }
-        &[data-tag-index="2"] {
-            background-color: var(--colour-tag-2);
-        }
-        &[data-tag-index="3"] {
-            background-color: var(--colour-tag-3);
-        }
-        &[data-tag-index="4"] {
-            background-color: var(--colour-tag-4);
-        }
-        &[data-tag-index="5"] {
-            background-color: var(--colour-tag-5);
-        }
-        &[data-tag-index="6"] {
-            background-color: var(--colour-tag-6);
-        }
-        &[data-tag-index="7"] {
-            background-color: var(--colour-tag-7);
-        }
-        &[data-tag-index="8"] {
-            background-color: var(--colour-tag-8);
-        }
-        &[data-tag-index="9"] {
-            background-color: var(--colour-tag-9);
-        }
+
+        /* background colour specified in javascript */
 
         .title {
             font-size: 1rem;
@@ -439,7 +335,7 @@ figcaption {
             top: 0.1rem;
             left: 100%;
             right: auto;
-            color: var(--colour-lightest);
+            color: var(--colour-darkest);
         }
         &.selected .title {
             font-weight: bold;

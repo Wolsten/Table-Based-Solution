@@ -13,12 +13,15 @@ class TableTimeline extends HTMLElement {
     end
     range
     options
+    colours
 
 
     constructor() {
         super()
         this.DEFAULT_SORT = 'date'
         this.AXIS_YEARS = 5
+        this.SATURATION = "30%"
+        this.LIGHTNESS = "70%"
     }
 
 
@@ -34,8 +37,8 @@ class TableTimeline extends HTMLElement {
         this.processEvents('table tbody tr')
 
         const view = this.getAttribute('data-view') || 'text'
-        const style = this.querySelector('style')
-        const customCSS = style ? this.getColourPalette(style.textContent) : ''
+        const tags = this.getAttribute('data-tags') || ''
+        const customCSS = this.getColourPalette(tags)
         const title = this.querySelector('figcaption')
         const caption = title ? `<figcaption>Timeline of ${title.textContent}</figcaption>` : ''
         const filters = this.getTimelineControls(view)
@@ -192,14 +195,13 @@ class TableTimeline extends HTMLElement {
         // console.log('events', this.events, this.eventCategories)
     }
 
-    getColourPalette(styleString) {
-        // console.log('colour palette in style?', styleString)
-        if (styleString === null) return ''
+    getColourPalette(tagColourString) {
+        console.log('colour palette in style?', tagColourString)
         // console.log('loading custom palette for timeline', timeline)
         let palette = ''
         // Extract tags from the timeline tags property
-        styleString = styleString.trim()
-        const tagColours = styleString.split('\n')
+        tagColourString = tagColourString.trim()
+        const tagColours = tagColourString.split(',')
         const tagColourTable = []
         tagColours.forEach(tag => {
             tag = tag.trim()
@@ -212,15 +214,30 @@ class TableTimeline extends HTMLElement {
                 }
             }
         })
+        const interval = Math.floor(245 / this.eventTags.length)
+        let hue = 10
+        let tagRules = []
+        let colour = ''
         this.eventTags.forEach((tag, index) => {
             const match = tagColourTable.find(entry => entry.tag === tag.toLowerCase())
             // console.log('checking tag', tag, 'found match', match, 'at index', index)
             if (match) {
-                palette += `--colour-tag-${index}:${match.colour}`
+                colour = match.colour
+            } else {
+                colour = `hsl(${hue}, ${this.SATURATION}, ${this.LIGHTNESS})`
+                hue += interval
             }
+            tagRules.push(`.filters form.tags label.tag-${index} {`)
+            tagRules.push(`    border-bottom-color: ${colour}`)
+            tagRules.push(`}`)
+            tagRules.push(`.summary .content[data-tag-index="${index}"] .tag::before,`)
+            tagRules.push(`.event[data-tag-index="${index}"] .tag::before,`)
+            tagRules.push(`[data-view="chart"] .event[data-tag-index="${index}"] {`)
+            tagRules.push(`    background-color: ${colour}`)
+            tagRules.push(`}`)
         })
         // console.log('new palette', palette)
-        return `<style>[is=my-timeline] { ${palette} } </style>`
+        return `<style>\n${tagRules.join('\n')}\n</style>`
     }
 
 
