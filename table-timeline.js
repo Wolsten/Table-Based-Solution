@@ -36,7 +36,7 @@ class TableTimeline extends HTMLElement {
         // Process events up front to collect the tags
         this.processEvents('table tbody tr')
 
-        const view = this.getAttribute('data-view') || 'text'
+        const view = this.getAttribute('data-view') || 'chart'
         const tags = this.getAttribute('data-tags') || ''
         const customCSS = this.getColourPalette(tags)
         const title = this.querySelector('figcaption')
@@ -324,14 +324,14 @@ class TableTimeline extends HTMLElement {
             content += `<h4>Linked timeline</h4>`
             content += `<a href="${prefix}${url}${ext}">${link}</a>`
         }
-        const img = event.image ? `<img src="${event.image}"/>` : ''
+        const img = event.image ? `<div class="event-image"><img src="${event.image}" loading="lazy"></div>` : ''
         const newEventElement = document.createElement('div')
         newEventElement.className = `event${textAlign}`
         newEventElement.setAttribute('data-tag-index', event.tagIndex)
         newEventElement.style = `margin-left: ${event.margin}%; width: ${event.width}%;`
         newEventElement.innerHTML = /* html */`
-            <h3 class="title">${event.title}</h3>
             ${img}
+            <h3 class="title">${event.title}</h3>
             <div class="dates-tag">
                 <span class="dates">
                     <span class="start">
@@ -525,8 +525,8 @@ class TableTimeline extends HTMLElement {
                     summaryDiv.style = `margin-top:${top}px`
                     const dates = event.element.querySelector('.dates').outerHTML
                     const content = event.element.querySelector('.content').innerHTML
-                    const image = event.image 
-                        ? /* html */ `<div class="summary-image"><img src="${event.image}" /></div>` 
+                    const image = event.element.querySelector('.event-image') 
+                        ? event.element.querySelector('.event-image').outerHTML
                         : ''
                     const datesTag = event.element.querySelector('.dates-tag').outerHTML
                     summaryDiv.innerHTML = /* html */`

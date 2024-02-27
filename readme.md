@@ -1,14 +1,12 @@
 # Table Timeline
 
-22nd Feb 2024
+27nd Feb 2024
 
 ## Introduction
 
-Table timeline is a custom web component that takes an appropriately structured HTML table and converts it into a graphical timeline as well as a prose version, formatted with a custom stylesheet. Implementing the timeline as a table means that a timeline can be indexed without the javascript component being triggered.
+Table timeline is a custom web component that takes an appropriately structured HTML table and converts it into a graphical timeline and prose, formatted with a custom stylesheet. Implementing the timeline as a table means that a timeline can be indexed without the javascript component being triggered.
 
 An Excel workbook is also provided which supports the automatic generation of either html or markdown files from timelines stored as separate worksheets in the workbook. The markdown files may be including in static site generators like [Hugo](https://gohugo.io).
-
-
 
 ## Installation
 
@@ -18,40 +16,58 @@ Add the script tag to the `<head>` section, using the `defer` attribute:
 
 `<script src="/table-timeline.js" defer></script>`
 
-The url location of the style sheet should be set as an option using the data-options attribute in any included table-timeline element. This means that you have the option of customising the stylesheet for each timeline - though this is unlikely to be that useful in practice.
-
+The url location of the style sheet should be set as an option using the data-options attribute in any included table-timeline element (see later). This means that you have the option of customising the stylesheet for each timeline.
 
 ## Quick Start
 
 To generate a number of sample timelines and an index file, open the workbook, go to sheet `ToC`, make sure that the Export parameter `test` is set to `true` and click the `Export` button.
 
-## Adding components manually
+## Adding Components Manually
 
 A table timeline is identified by a `figure` element with the `is` attribute set to `table-timeline`. The default view can be set using the `data-view` attribute. A number of options can be specified using a comma separated list for the `data-options` attribute as follows (default option is the first one in each case):
 
+```
 cssurl:\                Location of the css file relative to website root
 search:[true|false]     Display search box?
 view:[true|false]       Display view switch toggle buttons
 tags:[true|false]       Display tag filter buttons
 sorting:[true|false]    Display sorting options (date/tag)
-test:[false|true]       Test site. If true any linked timeline links will includ
-                        a `.html` suffix.
+test:[false|true]       Test site. If true any linked timeline links will include a `.html` suffix.
+```
 
+e.g. `data-options="sorting:false"`
+
+Additionally one may choose the default view to display:
 
 ```
-<figure is='table-timeline' data-view='chart|text' [data-options="cssurl:url"]>
+data-view="[chart|text]"
+```
 
-    <!-- Optional style section to override colours for -->
-    [<style>
-            table {
-                --tag-name-x: hsl(123, 70%, 57%);
-                --tag-name-y: hsl(194, 60%, 60%);
-                --tag-name-z: hsl(221, 80%, 70%);
-            }
-    </style>]
+If not specified the default view is `chart`.
 
+Finally, the component will generate default colours for each event according to its tag. You can override this using the `data-tags` option as follows:
+
+```
+data-tags='fruit:#E49EDD,vegetable:#4D93D9,animal:#83CCEB'
+```
+
+The tag colours should be specified as hyphenated versions of the tag name. Therefore, the tag name `large animals` would be specified by `large-animals`.
+
+You can specify your colours as any valid CSS colour value.
+
+So an example table timeline would be structured as follows:
+
+```html
+<figure
+    is="table-timeline"
+    [data-view="chart|text"
+    ]
+    [data-options="option1:value1,option2:value2,etc"
+    ]
+    [data-tags="tag1:colour1,tag1:colour2,etc"
+    ]
+>
     <table>
-
         <!-- Table head -->
         <thead>
             <tr>
@@ -67,36 +83,41 @@ test:[false|true]       Test site. If true any linked timeline links will includ
         </thead>
 
         <tbody>
-
-            <!-- Event rows -->
+            <!-- First event row -->
             <tr>
                 <th>event title</th>
                 <th>event start data</th>
-                <th>event end date </th>
+                <th>event end date</th>
                 <th>event tag (the type of event)</th>
                 <th>event content</th>
                 <th>event citations</th>
                 <th>event link - name of a linked timeline</th>
                 <th>event image link</th>
+            </tr>
+
             <tr>
-
-            <!-- etc -->
-
+                <!-- More event rows-->
+            </tr>
         </tbody>
-
     </table>
 
     <figcaption>Timeline Title</figcaption>
 </figure>
 ```
 
-### Custom tag colours
+### Images
 
-Table timelines may also have a `styles` tag which can be used to override the colours for each type of event (identified by its tag). If not provided a set of default colours will be used. These are specified in the `table-timeline.css` file. The tag colours should be specified as hyphenated versions of the tag name prefixed with `--`. Therefore, the tag name `large animals` would be specified by `--large-animals`.
+Optional event image links should be specified with a root relative url, e.g.:
+
+```
+/images/my-image.webp
+```
+
+according to where you store your images. Note that images are not processed or optimised in any way so you will need to ensure that image sizes are not too large, particularly for a large timeline. Images are however set to `load="lazy"`.
 
 ### Date formats
 
-Dates can be formatted in a number of ways:
+Start and end dates can be formatted in a number of ways:
 
 -   Year, _e.g. 2023_
 -   UTC date, _e.g. 2023-12-25_
@@ -110,4 +131,4 @@ Each timeline can mix date types for different events. Ongoing events are specif
 
 ## License
 
-This project is licensed under the terms of the (MIT license)[https://github.com/Wolsten/Table-Timeline/blob/main/LICENSE.md].
+This project is licensed under the terms of the [MIT license](https://github.com/Wolsten/Table-Timeline/blob/main/LICENSE.md).
