@@ -131,4 +131,4 @@ Each timeline can mix date types for different events. Ongoing events are specif
 
 ## License
 
-This project is licensed under the terms of the [MIT license](https://github.com/Wolsten/Table-Timeline/LICENSE.md).
+This project is licensed under the terms of the MIT license.
