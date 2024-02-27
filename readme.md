@@ -18,6 +18,14 @@ Add the script tag to the `<head>` section, using the `defer` attribute:
 
 The url location of the style sheet should be set as an option using the data-options attribute in any included table-timeline element (see later). This means that you have the option of customising the stylesheet for each timeline.
 
+### Installing as a Git Submodule
+
+Issue the following command to install table-timeline in your website in the folder `static/timeline` for example, perhaps in a Hugo website:
+
+```
+git submodule add https://github.com/Wolsten/Table-Timeline.git static/timeline
+```
+
 ## Quick Start
 
 To generate a number of sample timelines and an index file, open the workbook, go to sheet `ToC`, make sure that the Export parameter `test` is set to `true` and click the `Export` button.
