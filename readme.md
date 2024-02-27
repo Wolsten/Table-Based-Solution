@@ -20,7 +20,7 @@ The url location of the style sheet should be set as an option using the data-op
 
 ### Installing as a Git Submodule
 
-Issue the following command to install table-timeline in your website in the folder `static/timeline` for example, perhaps in a Hugo website:
+Issue the following command to install table-timeline in your website in the folder `static/timeline` for example, perhaps in a [Hugo website](https://gohugo.io):
 
 ```
 git submodule add https://github.com/Wolsten/Table-Timeline.git static/timeline
