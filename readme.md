@@ -6,7 +6,7 @@
 
 ## Introduction
 
-Table timeline is a custom web component that takes an appropriately structured HTML table and converts it into a graphical timeline and prose, formatted with a custom stylesheet. Implementing the timeline as a table means that a timeline can be indexed without the javascript component being triggered.
+Table timeline is a custom web component that takes an appropriately structured HTML table and converts it into a graphical timeline or prose, formatted with a custom stylesheet. Implementing the timeline as a table means that a timeline can be indexed without the javascript component being triggered.
 
 An Excel workbook is also provided which supports the automatic generation of either html or markdown files from timelines stored as separate worksheets in the workbook. The markdown files may be including in static site generators like [Hugo](https://gohugo.io).
 
@@ -32,22 +32,26 @@ git submodule add https://github.com/Wolsten/Table-Timeline.git static/timeline
 
 To generate a number of sample timelines and an index file, open the workbook, go to sheet `ToC`, make sure that the Export parameter `test` is set to `true` and click the `Export` button. Exported files will be placed in the `/exported` folder. 
 
-You may be prompted to grant access when exporting as a result of system security controls preventing malicious access by macros. When prompted select and grant access.
+You may be prompted to grant access when exporting as a result of system security controls preventing malicious access by macros. When prompted, select and grant access.
 
 ## Adding Components Manually
 
 A table timeline is identified by a `figure` element with the `is` attribute set to `table-timeline`. The default view can be set using the `data-view` attribute. A number of options can be specified using a comma separated list for the `data-options` attribute as follows (default option is the first one in each case):
 
-```
-cssurl:\                Location of the css file relative to website root
-search:[true|false]     Display search box?
-view:[true|false]       Display view switch toggle buttons
-tags:[true|false]       Display tag filter buttons
-sorting:[true|false]    Display sorting options (date/tag)
-test:[false|true]       Test site. If true any linked timeline links will include a `.html` suffix.
-```
+| Option | Values | Usage |
+| ------ | ------ | ----- |
+| cssurl | string | Location of the css file relative to website root |
+| search | true or false | Display search box? |
+| view   | true or false | Display view switch toggle buttons |
+| tags   | true or false | Display tag filter buttons |
+| sorting | true or false | Display sorting options (date/tag) |
+| test | true or false | Generate a test site. If true any linked timeline links will include a `.html` suffix. |
+||||
 
-e.g. `data-options="sorting:false"`
+e.g. 
+```
+data-options="cssurl=/,sorting:false,test=true"
+```
 
 Additionally one may choose the default view to display:
 
@@ -153,8 +157,10 @@ At the top of the timeline, depending on the configuration options specified, th
 | Search | Enter search text to find events which contain the text in their title or summary. The number of matching events is shown along with a button to reset the filter. |
 | Sort | Sort the events by date or tag order |
 | View | Switch between tabular text view and the waterfall chart view |
+|||
 
 If you click on an event in the chart view a summary panel will display the summary information along with any citations, image or link to another timeline.
+
 
 
 ## License
