@@ -196,7 +196,7 @@ class TableTimeline extends HTMLElement {
     }
 
     getColourPalette(tagColourString) {
-        console.log('colour palette in style?', tagColourString)
+        // console.log('colour palette in style?', tagColourString)
         // console.log('loading custom palette for timeline', timeline)
         let palette = ''
         // Extract tags from the timeline tags property
