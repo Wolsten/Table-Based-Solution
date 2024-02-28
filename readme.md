@@ -2,6 +2,8 @@
 
 27nd February 2024
 
+![Table Timeline](table-timeline.png)
+
 ## Introduction
 
 Table timeline is a custom web component that takes an appropriately structured HTML table and converts it into a graphical timeline and prose, formatted with a custom stylesheet. Implementing the timeline as a table means that a timeline can be indexed without the javascript component being triggered.
