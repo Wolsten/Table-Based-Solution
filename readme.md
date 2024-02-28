@@ -36,10 +36,10 @@ You may be prompted to grant access when exporting as a result of system securit
 
 ## Adding Components Manually
 
-A table timeline is identified by a `figure` element with the `is` attribute set to `table-timeline`. The default view can be set using the `data-view` attribute. A number of options can be specified using a comma separated list for the `data-options` attribute as follows (default option is the first one in each case):
+A table timeline is identified by a `figure` element with the `is` attribute set to `table-timeline`. The default view can be set using the `data-view` attribute. A number of options can be specified using a comma separated list of `attribute:value` pairs for the `data-options` attribute as follows:
 
-| Option | Values | Usage |
-| ------ | ------ | ----- |
+| Attribute | Value | Usage |
+| --------- | ----- | ----- |
 | cssurl | string | Location of the css file relative to website root |
 | search | true or false | Display search box? |
 | view   | true or false | Display view switch toggle buttons |
@@ -50,13 +50,13 @@ A table timeline is identified by a `figure` element with the `is` attribute set
 
 e.g. 
 ```
-data-options="cssurl=/,sorting:false,test=true"
+data-options="cssurl:/,sorting:false,test:true"
 ```
 
 Additionally one may choose the default view to display:
 
 ```
-data-view="[chart|text]"
+data-view="chart or text"
 ```
 
 If not specified the default view is `chart`.
@@ -64,7 +64,7 @@ If not specified the default view is `chart`.
 Finally, the component will generate default colours for each event according to its tag. You can override this using the `data-tags` option as follows:
 
 ```
-data-tags='fruit:#E49EDD,vegetable:#4D93D9,animal:#83CCEB'
+data-tags="fruit:#E49EDD,vegetable:#4D93D9,animal:#83CCEB"
 ```
 
 The tag colours should be specified as hyphenated versions of the tag name. Therefore, the tag name `large animals` would be specified by `large-animals`.
@@ -76,12 +76,9 @@ So an example table timeline would be structured as follows:
 ```html
 <figure
     is="table-timeline"
-    [data-view="chart|text"
-    ]
-    [data-options="option1:value1,option2:value2,etc"
-    ]
-    [data-tags="tag1:colour1,tag1:colour2,etc"
-    ]
+    [data-view="chart"]
+    [data-options="cssurl:/,sorting:false,test:true"]
+    [data-tags="fruit:#E49EDD,vegetable:#4D93D9,animal:#83CCEB"]
 >
     <table>
         <!-- Table head -->
