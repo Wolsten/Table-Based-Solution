@@ -1,12 +1,15 @@
 "use strict"
 
+// *** DO NOT USE ***
 // Convert an excel spreadsheet containing timeline data sheets into 
 // corresponding HTML files ready to display as graphical timelines
+// This file is now out of date with respect to the VBA code module in
+// the timelines.xlsm workbook and is left here for future reference only
 // Useage:
 // npm install xlsx
 // node excelToHtml yourExcelFile.xlsx
 // Author: Stephen John Davison
-// Date:14th Feb 2024
+// Date:128th Feb 2024
 // Licence: MIT
 
 

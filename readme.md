@@ -28,7 +28,9 @@ git submodule add https://github.com/Wolsten/Table-Timeline.git static/timeline
 
 ## Quick Start
 
-To generate a number of sample timelines and an index file, open the workbook, go to sheet `ToC`, make sure that the Export parameter `test` is set to `true` and click the `Export` button.
+To generate a number of sample timelines and an index file, open the workbook, go to sheet `ToC`, make sure that the Export parameter `test` is set to `true` and click the `Export` button. Exported files will be placed in the `/exported` folder. 
+
+You may be prompted to grant access when exporting as a result of system security controls preventing malicious access by macros. When prompted select and grant access.
 
 ## Adding Components Manually
 
@@ -143,7 +145,14 @@ The component will display the events in either a textual format, one after the 
 
 At the top of the timeline, depending on the configuration options specified, there will be a number of controls for filtering and sorting the view:
 
+| Filter | Usage |
+| ------ | ----- |
+| Tags   | All tags found in your timeline are listed, and by default all are shown as selected. Click a tag to toggle on and off the display of events with that tag. The number of matching events is shown along with a button to reset the filter. |
+| Search | Enter search text to find events which contain the text in their title or summary. The number of matching events is shown along with a button to reset the filter. |
+| Sort | Sort the events by date or tag order |
+| View | Switch between tabular text view and the waterfall chart view |
 
+If you click on an event in the chart view a summary panel will display the summary information along with any citations, image or link to another timeline.
 
 
 ## License
