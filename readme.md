@@ -137,6 +137,15 @@ Gregorian, common era and geologic indicators are case-insensitive.
 
 Each timeline can mix date types for different events. Ongoing events are specified by setting their end date to the word `date` or `-`. Events can just have a start time (i.e. instants), in which case the end date should be left blank.
 
+## Using the Table Timeline Component
+
+The component will display the events in either a textual format, one after the other, or as a waterfall chart.
+
+At the top of the timeline, depending on the configuration options specified, there will be a number of controls for filtering and sorting the view:
+
+
+
+
 ## License
 
 This project is licensed under the terms of the MIT license.

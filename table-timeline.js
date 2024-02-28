@@ -243,6 +243,7 @@ class TableTimeline extends HTMLElement {
 
     getTimelineControls(view) {
         let html = ''
+        let filter = false
         // console.log('tags', this.tagsCategories)
         if (this.options.tags && this.eventTags.length > 1) {
             this.eventTags.forEach((tag, index) => {
@@ -255,6 +256,7 @@ class TableTimeline extends HTMLElement {
                 `<form class="tags">
                     ${html}
                 </form>`
+            filter = true
         }
         if (this.options.search) {
             html += /* html */
@@ -264,6 +266,10 @@ class TableTimeline extends HTMLElement {
                     </label>
                     <div class="search-results"></div>
                 </form>`
+            filter = true
+        }
+        if ( filter ){
+            html += /* html */ `<div class="filter-results"></div>`
         }
         if (this.options.sorting && this.eventTags.length > 1) {
             html += /* html */
@@ -279,6 +285,7 @@ class TableTimeline extends HTMLElement {
                     <label title="Switch to chart view">Chart<input type="radio" name="view" value="chart" ${view === 'chart' ? 'checked' : ''}/></label>
                 </form>`
         }
+
         return html
     }
 
@@ -418,6 +425,9 @@ class TableTimeline extends HTMLElement {
         const containerDiv = timelineDiv.querySelector('.container')
         const summaryDiv = containerDiv.querySelector('.summary')
         const eventsDiv = containerDiv.querySelector('.events')
+        const filterResultsDiv = timelineDiv.querySelector('.filter-results')
+        const searchInput = timelineDiv.querySelector('form.search input')
+        const tagInputs = timelineDiv.querySelectorAll('form.tags input')
         const closeSummary = function () {
             containerDiv.classList.remove('show-summary')
             summaryDiv.innerHTML = ''
@@ -425,6 +435,29 @@ class TableTimeline extends HTMLElement {
             const selected = eventsDiv.querySelector('.event.selected')
             if (selected) selected.classList.remove('selected')
         }
+        const showFilterResults = function(){
+            const matchingEvents = eventsDiv.querySelectorAll('.event:not(.hide):not(.not-matches)')
+            const plural = matchingEvents.length === 1 ? '' : 's'
+            filterResultsDiv.innerHTML = `<span>Found ${matchingEvents.length} event${plural}</span>
+                <button class="reset-filters">Reset</button>`
+            filterResultsDiv.classList.add('got-results')
+        }
+        filterResultsDiv.addEventListener( 'click', evt => {
+            console.log('clicked', evt.target)
+            if ( evt.target.className === 'reset-filters' ){
+                filterResultsDiv.innerHTML = ''
+                const events = eventsDiv.querySelectorAll('.event')
+                filterResultsDiv.classList.remove('got-results')
+                if ( searchInput ) searchInput.value = ''
+                if ( tagInputs.length> 0 ){
+                    tagInputs.forEach( input => input.setAttribute('checked', 'checked'))
+                }
+                events.forEach( event => {
+                    event.classList.remove('hide')
+                    event.classList.remove('not-matches')
+                })
+            }
+        })
         // View changes
         if (this.options.view) {
             const viewInputs = timelineDiv.querySelectorAll('form.views input')
@@ -456,9 +489,9 @@ class TableTimeline extends HTMLElement {
                 })
             })
         }
-        // Category selections
+        // Tag selections
         if (this.options.tags) {
-            const tagInputs = timelineDiv.querySelectorAll('form.tags input')
+            let hide = false
             tagInputs.forEach(input => {
                 input.addEventListener('click', event => {
                     const option = event.target
@@ -475,16 +508,17 @@ class TableTimeline extends HTMLElement {
                                 event.element.classList.remove("hide")
                             } else {
                                 event.element.classList.add("hide")
+                                hide = true
                             }
                         }
                     })
+                    if ( hide ) showFilterResults()
                 })
             })
+            
         }
         // Search
         if (this.options.search) {
-            const searchInput = timelineDiv.querySelector('form.search input')
-            const searchResults = timelineDiv.querySelector('form.search .search-results')
             searchInput.addEventListener('input', evt => {
                 const text = evt.target.value.trim().toLowerCase()
                 let results = 0
@@ -498,8 +532,7 @@ class TableTimeline extends HTMLElement {
                         event.element.classList.add("not-matches")
                     }
                 })
-                const plural = results > 1 ? 'es' : ''
-                searchResults.innerHTML = text ? `Found ${results} match${plural}` : ''
+                if ( text ) showFilterResults()
             })
         }
 

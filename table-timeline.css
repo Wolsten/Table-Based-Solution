@@ -1,5 +1,4 @@
 :host {
-
     --border-width: 1px;
 
     --colour-darkest: hsl(120, 5%, 15%);
@@ -9,20 +8,19 @@
     --colour-lightest: hsl(120, 5%, 98%);
 }
 
-
 * {
     box-sizing: border-box;
 }
 
-
 .table-timeline {
-
     width: 100%;
     margin-bottom: 0;
     padding: 1rem;
     overflow: hidden;
 
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+        sans-serif;
     font-size: 16px;
     line-height: 1.4rem;
 
@@ -40,91 +38,104 @@
     padding: 0 0 0.5rem 0;
     border-bottom: 1px solid var(--colour-normal);
 
-    & form {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.6rem;
-        justify-content: flex-start;
-        align-items: center;
+    .filter-results.got-results {
+        display:flex;
+        flex-basis:100%;
+        justify-content: center;
 
-        & label {
-            margin: 0;
-            padding: 0.2rem 0.5rem;
-            text-align: center;
-            /* border: 1px solid var(--colour-normal); */
+        & span {
+            padding:0.3rem 0.6rem;
+            background-color: var(--colour-lighter);
+            color:var(--colour-darkest);
         }
+    }
 
-        & label:not(:has(input[checked])) {
-            background-color: var(--colour-normal);
-            cursor: pointer;
-            &:has(input[type="radio"]) {
-                /* border: 1px solid var(--colour-darker); */
-                &:hover {
-                    background-color: var(--colour-darker);
-                }
-            }
-            &:has(input[type="checkbox"]) {
-                &:hover {
-                    background-color: white;
-                }
-            }
+    .reset-filters {
+        padding: 0.3rem 0.6rem;
+        background-color: var(--colour-lightest);
+        border:none;
+        color:var(--colour-darkest);
+        cursor:pointer;
+        
+        &:hover{
+            background-color: var(--colour-darker);
+            color:var(--colour-lightest);
         }
+    }
+}
 
-        & label:has(input[checked]) {
-            background-color: white;
-            &:has(input[type="checkbox"]) {
-                &:hover {
-                    background-color: var(--colour-darker);
-                }
-            }
-        }
+.filters form {
 
-        & label:has(input[type="checkbox"]) {
-            cursor: pointer;
-        }
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    justify-content: flex-start;
+    align-items: center;
+    
+    & label {
+        margin: 0;
+        padding: 0.2rem 0.5rem;
+        text-align: center;
+    }
 
-        &.views,
-        &.sorting {
-            gap: 0;
-            & input {
-                display: none;
-            }
-        }
-
-        &.search {
-            gap: 0;
-            .event-search {
+    & label:not(:has(input[checked])) {
+        background-color: var(--colour-normal);
+        cursor: pointer;
+        &:has(input[type="radio"]) {
+            &:hover {
                 background-color: var(--colour-lightest);
             }
-            .search-results {
-                margin-left: 0.5rem;
-            }
-
         }
-
-        &.tags {
-            & input {
-                display: none;
-            }
-            & label {
-                margin-right: 1rem;
-                border-bottom-width: 6px;
-                border-bottom-style: solid;
-                /* Individual tag colours specified in javascript */
+        &:has(input[type="checkbox"]) {
+            &:hover {
+                background-color: var(--colour-lightest);
             }
         }
+    }
 
-        &.search {
-            & label {
-                background-color: transparent;
-                padding: 0 0 0 0.5rem;
-            }
-            & input {
+    & label:has(input[checked]) {
+        background-color: white;
+        &:has(input[type="checkbox"]) {
+            &:hover {
                 background-color: var(--colour-darker);
-                border: var(--border-width) solid
-                    var(--colour-lighter);
-                padding: 0.3rem 0.5rem;
             }
+        }
+    }
+
+    & label:has(input[type="checkbox"]) {
+        cursor: pointer;
+    }
+
+    &.views,
+    &.sorting {
+        gap: 0;
+        & input {
+            display: none;
+        }
+    }
+
+    &.tags {
+        & input {
+            display: none;
+        }
+        & label {
+            margin-right: 1rem;
+            border-bottom-width: 6px;
+            border-bottom-style: solid;
+            /* Individual tag colours specified in javascript */
+        }
+    }
+
+    &.search {
+        & label {
+            background-color: transparent;
+            padding: 0 0 0 0.5rem;
+        }
+        & input {
+            background-color: var(--colour-lightest);
+            border: var(--border-width) solid var(--colour-lighter);
+            padding: 0.5rem 0.5rem;
+            margin-left:0.3rem;
         }
     }
 }
@@ -138,7 +149,7 @@
 .summary .content,
 .event {
     .dates-tag {
-        display:flex;
+        display: flex;
         justify-content: space-between;
     }
     .tag {
@@ -234,27 +245,26 @@ figcaption {
 /* event-image */
 
 .event-image {
-    display:none;
+    display: none;
 }
 
 [data-view="text"] .event,
-[data-view="chart"] .container.show-summary {
+[data-view="chart"] .container.show-summary .summary {
     .event-image {
-        display:block;
+        display: block;
         height: 200px;
-        padding:1rem;
-        display:flex;
-        justify-content:center ;
+        padding: 1rem;
+        display: flex;
+        justify-content: center;
         & img {
-            max-width:100%;
-            max-height:200px;
-            object-fit:cover;
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: cover;
         }
     }
 }
 
 /* end event-image */
-
 
 [data-view="chart"] {
     .container {
@@ -274,7 +284,7 @@ figcaption {
         transition: flex-basis ease-in-out 300ms, opacity ease-in-out 600ms;
         overflow-wrap: break-word;
         .event-image {
-            display:none;
+            display: none;
         }
         .close {
             display: none;
@@ -299,21 +309,21 @@ figcaption {
             margin-top: 1rem;
         }
         .event img {
-            display:none;
+            display: none;
         }
     }
-    
+
     .container.show-summary {
         gap: 1rem;
         .summary {
             opacity: 1;
             visibility: visible;
             flex-basis: 50%;
-            max-width:50%;
+            max-width: 50%;
             padding: 0.5rem;
             .close {
                 display: block;
-                color:var(--colour-darker);
+                color: var(--colour-darker);
                 font-size: 1rem;
             }
         }
@@ -332,7 +342,7 @@ figcaption {
         box-shadow: 0.2rem 0.2rem 0.2rem var(--colour-darker);
 
         &:not(.hide):not(.not-matches) {
-            margin-bottom:0.3rem;
+            margin-bottom: 0.3rem;
         }
 
         /* background colour specified in javascript */
@@ -391,7 +401,7 @@ figcaption {
 
 @media (max-width: 640px) {
     [data-view="chart"] .container.show-summary {
-        gap:0;
+        gap: 0;
         .summary {
             flex-basis: 100%;
         }
