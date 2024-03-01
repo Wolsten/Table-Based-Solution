@@ -16,7 +16,6 @@
     width: 100%;
     margin-bottom: 0;
     padding: 1rem;
-    overflow: hidden;
 
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
         Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
@@ -24,8 +23,22 @@
     font-size: 16px;
     line-height: 1.4rem;
 
+    /* position:relative;
+    max-height: 80vh;
+    overflow-x:hidden;
+    overflow-y:scroll;
+    z-index: 10; */
+
     color: var(--colour-darkest);
     background-color: var(--colour-lighter);
+}
+
+.container {
+    /* position:relative; */
+    max-height: 50vh;
+    overflow-x:hidden;
+    overflow-y:scroll;
+    /* z-index: 10; */
 }
 
 .filters {
@@ -33,13 +46,19 @@
     justify-content: space-between;
     flex-wrap: wrap;
     align-items: start;
-    gap: 1.4rem;
+    gap: 1rem;
     margin: 0 0 0.5rem 0;
     padding: 0 0 0.5rem 0;
     border-bottom: 1px solid var(--colour-normal);
 
+    .filter-results {
+        opacity:0;
+        transition: opacity ease-in-out 500ms;
+    }
+
     .filter-results.got-results {
         display:flex;
+        opacity:1;
         flex-basis:100%;
         justify-content: center;
 
@@ -209,6 +228,10 @@ cite {
 
 .x-axis {
     display: none;
+    position:sticky;
+    bottom:0;
+    background-color: var(--colour-lighter);
+    z-index: 30;
 }
 
 figcaption {

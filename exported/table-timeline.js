@@ -268,9 +268,7 @@ class TableTimeline extends HTMLElement {
                 </form>`
             filter = true
         }
-        if (filter) {
-            html += /* html */ `<div class="filter-results"></div>`
-        }
+
         if (this.controls.sorting && this.eventTags.length > 1) {
             html += /* html */
                 `<form class="sorting">
@@ -284,6 +282,10 @@ class TableTimeline extends HTMLElement {
                     <label title="Switch to text view">Text<input type="radio" name="view" value="text" ${view === 'text' ? 'checked' : ''}/></label>
                     <label title="Switch to chart view">Chart<input type="radio" name="view" value="chart" ${view === 'chart' ? 'checked' : ''}/></label>
                 </form>`
+        }
+        
+        if (filter) {
+            html += /* html */ `<div class="filter-results"></div>`
         }
 
         return html
