@@ -6,11 +6,23 @@
 
 ## Introduction
 
-Table timeline is a custom web component that takes an appropriately structured HTML table and converts it into a graphical timeline or prose, formatted with a custom stylesheet. Implementing the timeline as a table means that a timeline can be indexed without the javascript component being triggered.
+Table timeline is a custom web component that takes an appropriately structured HTML table and converts it into a graphical timeline or prose, formatted with a custom stylesheet. Implementing the timeline as a table means that a timeline can be indexed without the javascript component being triggered which supports SEO.
 
-An Excel workbook is also provided which supports the automatic generation of either html or markdown files from timelines stored as separate worksheets in the workbook. The markdown files may be including in static site generators like [Hugo](https://gohugo.io).
+An Excel workbook is also provided with sample timelines which can be used to generate of the required html automatically. A custom node script `excel-to-timeline` is provided for this purpose. This script relies on the NPM package `XLSX` which needs to be installed as follows:
+
+```
+$ npm install xlsx
+```
+
+Full details for other ways to install are provided here: https://www.npmjs.com/package/xlsx
+
+
 
 ## Installation
+
+The source files are available here:
+
+https://github.com/Wolsten/Table-Timeline.git
 
 The main files you need are the javascript module `table-timeline.js` and the css file `table-timeline.css`.
 
@@ -18,11 +30,11 @@ Add the script tag to the `<head>` section, using the `defer` attribute:
 
 `<script src="/table-timeline.js" defer></script>`
 
-The url location of the style sheet should be set as an option using the data-options attribute in any included table-timeline element (see later). This means that you have the option of customising the stylesheet for each timeline.
+The url location of the style sheet should be set as an option using the data-css-url parameter in any included table-timeline element (see later). This means that you have the option of customising the stylesheet for each timeline.
 
 ### Installing as a Git Submodule
 
-Issue the following command to install table-timeline in your website in the folder `static/timeline` for example, perhaps in a [Hugo website](https://gohugo.io):
+Issue the following command to install table-timeline in your website in a specific folder, such as `static/timeline` for example:
 
 ```
 git submodule add https://github.com/Wolsten/Table-Timeline.git static/timeline
@@ -30,27 +42,44 @@ git submodule add https://github.com/Wolsten/Table-Timeline.git static/timeline
 
 ## Quick Start
 
-To generate a number of sample timelines and an index file, open the workbook, go to sheet `ToC`, make sure that the Export parameter `test` is set to `true` and click the `Export` button. Exported files will be placed in the `/exported` folder. 
+To generate a number of sample timelines for testing run the following script:
 
-You may be prompted to grant access when exporting as a result of system security controls preventing malicious access by macros. When prompted, select and grant access.
+```
+$ node excel-to-timeline test=true
+```
+
+The full set of parameters are as follows:
+
+| Parameter | Values | Description |
+| --------- | ------ | ----------- |
+| test | true or false | Default is `false`. When `false` only the actual timeline HTML is generated, and the resulting code can be included in other HTML pages or markdown (with suitable configuration). When set to `true` a full HTML file is generated which can be tested in a browser, e.g. using LiveServer. |
+| input | string | The name of the excel workbook to use as the source of timelines. If not specified the example workbook `timelines.xlsx` is used. |
+| dest | string | The full path for where to save the generated HTML files. If not specified the default is `/exported`. |
+| css-url | string | This should be a root relative url to where to find the table-timeline.css stylesheet. The default is "/" |
+| images-url | string | This should be a root relative url to where to find any event header images. The default is "/" |
+||||
+
 
 ## Adding Components Manually
 
-A table timeline is identified by a `figure` element with the `is` attribute set to `table-timeline`. The default view can be set using the `data-view` attribute. A number of options can be specified using a comma separated list of `attribute:value` pairs for the `data-options` attribute as follows:
+It is also possible to write timelines manually in HTML.
+
+A table timeline is identified by a `figure` element with the `is` attribute set to `table-timeline`. The default view can be set using the `data-view` attribute. By default the component assumes that the css file `table-timeline.css` is located in the same place as the component itself. This can be modified by setting your own url using the `data-css-url` parameter.
+
+The component includes various inputs for filtering and sorting the events and these can be removed individually if required using a comma separated list of `attribute:value` pairs for the `data-controls` attribute as follows (default values given first in each case):
 
 | Attribute | Value | Usage |
 | --------- | ----- | ----- |
-| cssurl | string | Location of the css file relative to website root |
-| search | true or false | Display search box? |
-| view   | true or false | Display view switch toggle buttons |
-| tags   | true or false | Display tag filter buttons |
-| sorting | true or false | Display sorting options (date/tag) |
-| test | true or false | Generate a test site. If true any linked timeline links will include a `.html` suffix. |
+| search | `true` or `false` | Display search box? |
+| view   | `true` or `false` | Display view switch toggle buttons |
+| tags   | `true` or `false` | Display tag filter buttons |
+| sorting | `true` or `false` | Display sorting options (date/tag) |
+| test | `false` or `true` | If true any linked timeline links will include a `.html` suffix. |
 ||||
 
 e.g. 
 ```
-data-options="cssurl:/,sorting:false,test:true"
+data-controls="sorting:false,test:true"
 ```
 
 Additionally one may choose the default view to display:
@@ -61,10 +90,10 @@ data-view="chart or text"
 
 If not specified the default view is `chart`.
 
-Finally, the component will generate default colours for each event according to its tag. You can override this using the `data-tags` option as follows:
+Finally, the component will generate default colours for each event according to its tag. You can override this using the `data-tag-colours` attribute as follows:
 
 ```
-data-tags="fruit:#E49EDD,vegetable:#4D93D9,animal:#83CCEB"
+data-tag-colours="fruit:#E49EDD,vegetable:#4D93D9,animal:#83CCEB"
 ```
 
 The tag colours should be specified as hyphenated versions of the tag name. Therefore, the tag name `large animals` would be specified by `large-animals`.
@@ -77,14 +106,16 @@ So an example table timeline would be structured as follows:
 <figure
     is="table-timeline"
     [data-view="chart"]
-    [data-options="cssurl:/,sorting:false,test:true"]
-    [data-tags="fruit:#E49EDD,vegetable:#4D93D9,animal:#83CCEB"]
+    [data-images-url="/images"]
+    [data-css-url="/styles"]
+    [data-controls="sorting:false,test:true"]
+    [data-tag-colours="fruit:#E49EDD,vegetable:#4D93D9,animal:#83CCEB"]
 >
     <table>
         <!-- Table head -->
         <thead>
             <tr>
-                <th>title</th>
+                <th>event</th>
                 <th>start</th>
                 <th>end</th>
                 <th>tag</th>
@@ -114,7 +145,7 @@ So an example table timeline would be structured as follows:
         </tbody>
     </table>
 
-    <figcaption>Timeline Title</figcaption>
+    <figcaption>Timeline Name</figcaption>
 </figure>
 ```
 

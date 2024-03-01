@@ -8,16 +8,21 @@
 // Useage:
 // npm install xlsx
 // node excelToHtml yourExcelFile.xlsx
-// Author: Stephen John Davison
-// Date:128th Feb 2024
+// Author: Steve Davison
+// Date: 1st March 2024
 // Licence: MIT
 
 
 const fs = require('fs');
 const XLSX = require('xlsx');
 const SOURCE_FOLDER = './'
-let output_folder = './'
 
+// Props
+let output_folder = './exported/'
+let fileName = 'timelines.xlsx'
+let test = false
+let cssUrl = "/"
+let imagesUrl = "/"
 
 // It is important that the rawHTML shortcodes appear at the start of the line.
 // Also, to get code highlighting in VSCode for HTML need the timeline to start 
@@ -38,25 +43,24 @@ function prettyPrint(html) {
   return html
 }
 
-let col_title = -1
+let col_event = -1
 let col_start = -1
 let col_end = -1
 let col_tag = -1
 let col_content = -1
 let col_citations = -1
-let col_link = -1
+let col_linked = -1
+let col_image = -1
 let errors = []
 
 
-function generateEventHtml(sheetName, json) {
-  let nRows = 0
-  let category = ''
-  let timelineName = ''
-  let summary = ''
-  let image = ''
-  let html = ''
-  const tags = []
-  errors = []
+function generateEventHtml(workbook, sheetName, json) {
+
+  let nRows = 0;
+  let categories = '';
+  let timeline = '';
+  let html = '';
+  let tags = []
   let gotProps = false
   let foundTitles = false
 
@@ -65,14 +69,16 @@ function generateEventHtml(sheetName, json) {
     if (!gotProps) {
 
       const label = row[0].trim().toLowerCase()
-      console.log('Getting prop', label)
       const value = row[1] ? row[1].trim() : ''
+
       switch (label) {
-        case 'name': timelineName = value; break
-        case 'category': category = value; break
-        case 'summary': summary = value; break
-        case 'image': image = value; break
-        case 'title':
+        case 'timeline':
+          timeline = value
+          break
+        case 'categories':
+          categories = value
+          break
+        case 'event':
           gotProps = true
           foundTitles = true
           break
@@ -81,184 +87,195 @@ function generateEventHtml(sheetName, json) {
     }
 
     if (foundTitles) {
-      console.log('Getting titles')
+      // console.log('Getting titles')
       foundTitles = false
 
-      col_title = row.findIndex(col => col.trim().toLowerCase() === 'title')
-      if (col_title === -1) errors.push('title')
+      const getTitle = function (title) {
+        const col = row.findIndex(col => col.trim().toLowerCase() === title)
+        if (col === -1) {
+          errors.push(title)
+        }
+        return col
+      }
 
-      col_start = row.findIndex(col => col.trim().toLowerCase() === 'start')
-      if (col_start === -1) errors.push('start')
+      col_event = getTitle('event')
+      col_start = getTitle('start')
+      col_end = getTitle('end')
+      col_tag = getTitle('tag')
+      col_content = getTitle('content')
+      col_citations = getTitle('citations')
+      col_linked = getTitle('linked')
+      col_image = getTitle('image')
 
-      col_end = row.findIndex(col => col.trim().toLowerCase() === 'end')
-      if (col_end === -1) errors.push('end')
-
-      col_tag = row.findIndex(col => col.trim().toLowerCase() === 'tag')
-      if (col_tag === -1) errors.push('tag')
-
-      col_content = row.findIndex(col => col.trim().toLowerCase() === 'content')
-      if (col_content === -1) errors.push('content')
-
-      col_citations = row.findIndex(col => col.trim().toLowerCase() === 'citations')
-      if (col_citations === -1) errors.push('citation')
-
-      col_link = row.findIndex(col => col.trim().toLowerCase() === 'link')
-
-      if (errors.length > 0) console.error(`Sheet "${sheetName}" is missing the following columns: [${errors.join(', ')}]`)
+      if (errors.length > 0) console.error(`ERROR: Sheet "${sheetName}" is missing the following columns: [${errors.join(', ')}]`)
 
       return
     }
 
-    if (errors.length > 0) return
+    if (errors.length > 0) return ''
 
     nRows++
 
-    // console.log('col_title', col_title)
-
-    const title = row[col_title].trim()
-    const start = row[col_start].trim()
-    const end = row[col_end] ? row[col_end].trim() : ''
     const tag = row[col_tag].trim()
-    const content = row[col_content].trim()
-    const citations = row[col_citations] ? row[col_citations].trim() : ''
-    const link = row[col_link] ? row[col_link].trim() : ''
-
     if (!tags.includes(tag)) tags.push(tag)
 
-    html += /* html */`\n
-          <tr>
-          <td>${title}</td>
-          <td>${start}</td>
-          <td>${end}</td>
-          <td>${tag}</td>
-          <td>${content}</td>
-          <td>${citations}</td>
-          <td>${link}</td>
-          </tr>`
+    // Check if the linked sheet exists
+    const linked = row[col_linked] ? row[col_linked].trim().toLowerCase() : ''
+    if ( linked !== ""){
+      const sheet = workbook.SheetNames.find( name => name.trim().toLowerCase()===linked)
+      if ( !sheet ){
+        console.error(`\nERROR: processing timeline ${timeline} - found missing linked timeline: ${linked}\n`)
+      }
+    }
+
+    html += /* html */`
+      <tr>
+        <td>${row[col_event].trim()}</td>
+        <td>${row[col_start].trim()}</td>
+        <td>${row[col_end] ? row[col_end].trim() : ''}</td>
+        <td>${row[col_tag].trim()}</td>
+        <td>${row[col_content].trim()}</td>
+        <td>${row[col_citations] ? row[col_citations].trim() : ''}</td>
+        <td>${linked}</td>
+        <td>${row[col_image] ? row[col_image].trim() : ''}</td>
+      </tr>`
   })
 
   console.log(`Found ${nRows} rows in the worksheet "${sheetName}"`)
 
-  // console.log('CONSTRUCTED html BEFORE TABLE', html)
-
-
   html = /* html */`
+  <figure is="table-timeline" 
+          data-view="chart" 
+          data-css-url="${cssUrl}" 
+          data-images-url="${imagesUrl}" 
+          data-categories="${categories}"
+          data-tag-colours=""
+          data-controls="view:true,tags:true,search:true,sorting:true">
     <table>
     <thead>
       <tr>
-        <th>title</th>
+        <th>event</th>
         <th>start</th>
         <th>end</th>
         <th>tag</th>
         <th>content</th>
         <th>citations</th>
-        <th>link</th>
+        <th>linked</th>
+        <th>image</th>
       </tr>
     </thead>
     <tbody>
       ${html}
     </tbody>
     </table>
-  `
+    <figcaption>${timeline}</figcaption>
+  </figure>`
 
   // console.log('RETURNING html', html)
 
-  return { html, tags, title: timelineName, category, summary, image }
+  return html
+}
+
+
+function generateTestFile(html){
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Timeline Test Page</title>
+      <link rel="stylesheet" href="/test.css">
+      <script src="/table-timeline.js" defer></script>
+    </head>
+    <body class="home">
+      <h1>Timeline Test Page</h1>
+      ${html}
+    </body>
+  </html>`
 }
 
 
 // Function to convert Excel sheet to HTML
-function excelToHtml(sheetName, sheet) {
+function excelToHtml(workbook, sheetName, sheet) {
 
+  // @todo need to use this
   const date = (new Date()).toISOString()
 
   // Convert sheet to JSON
 
   const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
   // console.log('json', json)
 
+  if (json[0][0] !== "timeline") return ""
+
   // Generate HTML
-  let { html, tags, title, category, summary, image } = generateEventHtml(sheetName, json)
+  let html = generateEventHtml(workbook, sheetName, json)
 
-  html = /* html */`<figure is="my-timeline" data-view="text">\n${html}\n<figcaption>${title}</figcaption>\n</figure>`
-
-
-
-  if (format === 'hugo') {
-    const tagsString = tags ? tags.join(',') : ''
-    const summaryParam = summary ? `\nsummary: ${summary}` : ''
-    const imageParam = image ? `\nimage: ${image}` : ''
-    html =
-      `---
-      \ntitle: ${title}
-      \ndate: ${date}
-      \ndraft: false
-      \ntags: [${tagsString}]
-      \ncategories: [${category}]
-      ${summaryParam}
-      ${imageParam}
-      \n---
-      \n
-      \n{{< rawhtml >}}
-      \n
-      \n${html}\n
-      \n
-      \n{{< /rawhtml >}}
-      \n\n`
-  }
   // console.log('pre pretty printed html', html)
-  html = prettyPrint(html)
+  // html = prettyPrint(html)
+
   return html
 }
 
 // Example usage: node excelToHtml.js yourExcelFile.xlsx
 // print process.argv
-let fileName = ''
-let format = 'html'
+
 process.argv.forEach(val => {
-  // console.log(index + ': ' + val);
-  if (val.includes('format=')) {
-    const parts = val.split('=')
-    if (parts.length === 2) {
-      format = parts[1].trim()
-    }
-  } else if (val.includes('input=')) {
-    const parts = val.split('=')
-    if (parts.length === 2) {
-      fileName = parts[1].trim()
-    }
-  } else if (val.includes('dest=')) {
-    const parts = val.split('=')
-    if (parts.length === 2) {
-      output_folder = parts[1].trim()
+  const parts = val.split('=')
+  if (parts.length === 2) {
+    const param = parts[0].trim()
+    const value = parts[1].trim()
+    switch (param) {
+      case 'test': test = value.toLowerCase()==='true'; break
+      case 'input': filename = value; break
+      case 'dest': output_folder = value; break
+      case 'css-url': cssUrl = value; break
+      case 'images-url': imagesUrl = value; break
     }
   }
 });
-console.log('input file =', fileName)
-// console.log('output format =', format)
+
+if ( test ){
+  cssUrl = "/exported"
+  imagesUrl = "/exported"
+}
 
 if (fileName) {
 
   // Read the Excel file
   const workbook = XLSX.readFile(SOURCE_FOLDER + fileName);
-  let fileExtension = '.html'
-  if (format === 'hugo' || format === 'md') {
-    fileExtension = '.md'
-  }
 
   // Export all the sheets
   workbook.SheetNames.forEach(sheetName => {
+
     const sheet = workbook.Sheets[sheetName];
-    const html = excelToHtml(sheetName, sheet);
-    // console.log(html);
-    sheetName = sheetName.toLowerCase().replace(/( )/g, '-')
-    console.log('writing file to folder', output_folder)
-    fs.writeFile(output_folder + sheetName + fileExtension, html, err => {
-      if (err) {
-        console.error(err);
+    let html = excelToHtml(workbook, sheetName, sheet);
+
+    // console.log('sheet', sheetName, ': generated html[', html, ']')
+
+    if (html !== "") {
+
+      if ( test ){
+        html = generateTestFile(html)
       }
-    })
+
+      sheetName = sheetName.toLowerCase().replace(/( )/g, '-')
+      console.log('writing file to folder', output_folder)
+      fs.writeFile(output_folder + sheetName + '.html', html, err => {
+        if (err) {
+          console.error(err);
+        }
+      })
+    }
   })
+
+  if ( test ){
+    // Copy files to output folder
+    fs.copyFileSync('table-timeline.js', output_folder + 'table-timeline.js');
+    fs.copyFileSync('table-timeline.css', output_folder + 'table-timeline.css');
+  }
 
 } else {
   console.warn(`\nPlease provide the name of the Excel file. The generated HTML files will be places in your ${output_folder} folder.\n`);
