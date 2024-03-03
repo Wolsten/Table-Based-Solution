@@ -227,7 +227,7 @@ class TableTimeline extends HTMLElement {
                 colour = `hsl(${hue}, ${this.SATURATION}, ${this.LIGHTNESS})`
                 hue += interval
             }
-            tagRules.push(`.filters form.tags label.tag-${index} {`)
+            tagRules.push(`.filters form.tags label.tag-${index} span {`)
             tagRules.push(`    border-bottom-color: ${colour}`)
             tagRules.push(`}`)
             tagRules.push(`.summary .content[data-tag-index="${index}"] .tag::before,`)
@@ -248,7 +248,8 @@ class TableTimeline extends HTMLElement {
         if (this.controls.tags && this.eventTags.length > 1) {
             this.eventTags.forEach((tag, index) => {
                 html += /* html */`
-                    <label title="Hide/show events with this tag" class="tag-${index}">${tag}
+                    <label title="Hide/show events with this tag" class="tag-${index}">
+                        <span>${tag}</span>
                         <input type="checkbox" name="tag[${index}]" value="${index}" checked />
                     </label>`
             })
@@ -264,26 +265,36 @@ class TableTimeline extends HTMLElement {
                     <label>Search
                         <input class="event-search" type="text" name="search" value="" />
                     </label>
-                    <div class="search-results"></div>
                 </form>`
             filter = true
         }
 
         if (this.controls.sorting && this.eventTags.length > 1) {
+            const other =  this.DEFAULT_SORT === 'date' ? 'Switch to tag sorting' : 'Switch to date sorting'
+            const checked = this.DEFAULT_SORT === 'date' ? "checked" : ""
+            const state = this.DEFAULT_SORT === 'date' ? "on" : "off"
             html += /* html */
-                `<form class="sorting">
-                    <label title="Sort by date">Date<input type="radio" name="sorting" value="date" ${this.DEFAULT_SORT === 'date' ? 'checked' : ''}/></label>
-                    <label title="Sort by tag">Tag<input type="radio" name="sorting" value="tag" ${this.DEFAULT_SORT === 'tag' ? 'checked' : ''}/></label>
+                `<form class="sorting switch">
+                    <label title="${other}">
+                        <input type="checkbox" name="sorting" value="${state}"/>
+                        <span class="off">Tag</span><span class="on">Date</span>
+                    </label>
                 </form>`
         }
         if (this.controls.view) {
+            const other = view === 'chart' ? 'Switch to text view' : 'Switch to chart view'
+            const checked = view === 'chart' ? "checked" : ""
+            const state = view === 'chart' ? "on" : "off"
             html += /* html */
-                `<form class="views">
-                    <label title="Switch to text view">Text<input type="radio" name="view" value="text" ${view === 'text' ? 'checked' : ''}/></label>
-                    <label title="Switch to chart view">Chart<input type="radio" name="view" value="chart" ${view === 'chart' ? 'checked' : ''}/></label>
+                `<form class="views switch">
+                    <label title="${other}">
+                        <input type="checkbox" name="view" value="${state}" ${checked}/>
+                        <span class="off">Text</span><span class="on">Chart</span>
+                    </label>
                 </form>`
         }
-        
+
+
         if (filter) {
             html += /* html */ `<div class="filter-results"></div>`
         }
@@ -464,33 +475,38 @@ class TableTimeline extends HTMLElement {
         }
         // View changes
         if (this.controls.view) {
-            const viewInputs = timelineDiv.querySelectorAll('form.views input')
-            viewInputs.forEach(input => {
-                input.addEventListener('click', () => {
-                    viewInputs.forEach(i => {
-                        i.removeAttribute('checked')
-                        timelineDiv.removeAttribute('data-view')
-                    })
-                    input.setAttribute('checked', 'checked')
-                    timelineDiv.setAttribute('data-view', input.value)
-                    closeSummary()
-                })
+            const input = timelineDiv.querySelector('form.views input')
+            const label = timelineDiv.querySelector('form.views label')
+            input.addEventListener( 'click', () => {
+                timelineDiv.removeAttribute('data-view')
+                if ( input.value === 'off' ){
+                    input.value = 'on'
+                    timelineDiv.setAttribute('data-view', 'chart')
+                    label.title = "Switch to text view"
+                } else {
+                    input.value = 'off'
+                    timelineDiv.setAttribute('data-view', 'text')
+                    label.title = "Switch to chart view"
+                }
             })
         }
         // Sorting
         if (this.controls.sorting) {
-            const sortingInputs = timelineDiv.querySelectorAll('form.sorting input')
-            sortingInputs.forEach(input => {
-                input.addEventListener('click', event => {
-                    console.log('clicked sorting', event.target.value)
-                    sortingInputs.forEach(i => {
-                        i.removeAttribute('checked')
-                    })
-                    input.setAttribute('checked', 'checked')
-                    // Sort events
-                    this.sortEvents(event.target.value)
-                    this.redrawEvents()
-                })
+            const input = timelineDiv.querySelector('form.sorting input')
+            const label = timelineDiv.querySelector('form.sorting label')
+            input.addEventListener( 'click', () => {
+                if ( input.value === 'off' ){
+                    console.log('was off when clicked')
+                    input.value = 'on'
+                    label.title = "Switch to tag sorting"
+                    this.sortEvents('date')
+                } else {
+                    console.log('was on when clicked')
+                    input.value = 'off'
+                    label.title = "Switch to date sorting"
+                    this.sortEvents('tag')
+                }
+                this.redrawEvents()
             })
         }
         // Tag selections

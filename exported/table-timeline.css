@@ -23,27 +23,19 @@
     font-size: 16px;
     line-height: 1.4rem;
 
-    /* position:relative;
-    max-height: 80vh;
-    overflow-x:hidden;
-    overflow-y:scroll;
-    z-index: 10; */
-
     color: var(--colour-darkest);
     background-color: var(--colour-lighter);
 }
 
 .container {
-    /* position:relative; */
     max-height: 50vh;
     overflow-x:hidden;
     overflow-y:scroll;
-    /* z-index: 10; */
 }
 
 .filters {
     display: flex;
-    justify-content: space-between;
+    justify-content:flex-start;
     flex-wrap: wrap;
     align-items: start;
     gap: 1rem;
@@ -59,7 +51,7 @@
     .filter-results.got-results {
         display:flex;
         opacity:1;
-        flex-basis:100%;
+        /* flex-basis:100%; */
         justify-content: center;
 
         & span {
@@ -90,36 +82,49 @@
     gap: 0.6rem;
     justify-content: flex-start;
     align-items: center;
-    
+
     & label {
+        margin: 0;
+        padding:0;
+        border:2px solid transparent;
+        transition:border-color ease-in-out 200ms;
+    }
+    
+    & label span {
+        display:inline-block;
         margin: 0;
         padding: 0.2rem 0.5rem;
         text-align: center;
+        background-color: var(--colour-lightest);
+        transition:background-color ease-in-out 200ms;
     }
 
-    & label:not(:has(input[checked])) {
-        background-color: var(--colour-normal);
-        cursor: pointer;
-        &:has(input[type="radio"]) {
-            &:hover {
+    & label:hover {
+        border-color:var(--colour-normal);
+    }
+
+    &.tags {
+        & label {
+            & span {
+                background-color: var(--colour-lighter);
+            }
+            &:has(input[checked]) span {
                 background-color: var(--colour-lightest);
             }
         }
-        &:has(input[type="checkbox"]) {
-            &:hover {
-                background-color: var(--colour-lightest);
+    }
+
+    &.switch {
+        & label {
+            & input[value='on'] ~ span.off {
+                background-color: var(--colour-lighter);
+            }
+            & input[value='off'] ~ span.on {
+                background-color: var(--colour-lighter);
             }
         }
     }
 
-    & label:has(input[checked]) {
-        background-color: white;
-        &:has(input[type="checkbox"]) {
-            &:hover {
-                background-color: var(--colour-darker);
-            }
-        }
-    }
 
     & label:has(input[type="checkbox"]) {
         cursor: pointer;
@@ -137,8 +142,7 @@
         & input {
             display: none;
         }
-        & label {
-            margin-right: 1rem;
+        & label span {
             border-bottom-width: 6px;
             border-bottom-style: solid;
             /* Individual tag colours specified in javascript */

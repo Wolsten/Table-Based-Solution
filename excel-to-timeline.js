@@ -273,7 +273,7 @@ if (fileName) {
 
   if ( test ){
     // Copy files to output folder
-    fs.copyFileSync('table-timeline.js', output_folder + 'table-timeline.js');
+    // fs.copyFileSync('table-timeline.js', output_folder + 'table-timeline.js');
     fs.copyFileSync('table-timeline.css', output_folder + 'table-timeline.css');
     fs.copyFileSync('test.css', output_folder + 'test.css');
   }
