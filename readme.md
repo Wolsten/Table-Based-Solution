@@ -53,7 +53,7 @@ The full set of parameters are as follows:
 | Parameter | Values | Description |
 | --------- | ------ | ----------- |
 | test | true or false | Default is `false`. When `false` only the actual timeline HTML is generated, and the resulting code can be included in other HTML pages or markdown (with suitable configuration). When set to `true` a full HTML file is generated which can be tested in a browser, e.g. using LiveServer. |
-| input | string | The name of the excel workbook to use as the source of timelines. If not specified the example workbook `timelines.xlsx` is used. |
+| input | string | The name of the excel workbook to use as the source of timelines. If not specified the example workbook `timelines.xlsm` is used. |
 | dest | string | The full path for where to save the generated HTML files. If not specified the default is `/exported`. |
 | css-url | string | This should be a root relative url to where to find the table-timeline.css stylesheet. The default is "/" |
 | images-url | string | This should be a root relative url to where to find any event header images. The default is "/" |
@@ -98,7 +98,9 @@ data-tag-colours="fruit:#E49EDD,vegetable:#4D93D9,animal:#83CCEB"
 
 The tag colours should be specified as hyphenated versions of the tag name. Therefore, the tag name `large animals` would be specified by `large-animals`.
 
-You can specify your colours as any valid CSS colour value.
+You can specify your colours as any valid CSS colour value. The example workbook `timelines.xlsm` shows that you can set the colours (optionally) in each sheet. 
+
+Simply insert two rows before the start of the events with the first called `tags` and the second called `colours` (note both must be lower case). In the tags row list the tags used in your events table (or at least the ones you want to override the colours for). Then below each tag in the colours row, set the background colour of the cell as required. When you save the workbook, a macro is run to insert matching Hex colour names into the coloured cells. See the two sheets `UK Prime Ministers` and `History of the Universe` for examples.
 
 So an example table timeline would be structured as follows:
 

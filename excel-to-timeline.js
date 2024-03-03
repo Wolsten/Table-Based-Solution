@@ -19,7 +19,7 @@ const SOURCE_FOLDER = './'
 
 // Props
 let output_folder = './exported/'
-let fileName = 'timelines.xlsx'
+let fileName = 'timelines.xlsm'
 let test = false
 let cssUrl = "/"
 let imagesUrl = "/"
@@ -54,6 +54,19 @@ let col_image = -1
 let errors = []
 
 
+function getColours(colours, tags) {
+  let tagCol = ''
+  colours.forEach((colour, index) => {
+    if (index === 0) return
+    if (tagCol !== '') {
+      tagCol += ','
+    }
+    tagCol += tags[index] + ':' + colour
+  })
+  return tagCol
+}
+
+
 function generateEventHtml(workbook, sheetName, json) {
 
   let nRows = 0;
@@ -61,10 +74,11 @@ function generateEventHtml(workbook, sheetName, json) {
   let timeline = '';
   let html = '';
   let tags = []
+  let colours = '';
   let gotProps = false
   let foundTitles = false
 
-  json.forEach(row => {
+  json.forEach((row, index) => {
 
     if (!gotProps) {
 
@@ -77,6 +91,10 @@ function generateEventHtml(workbook, sheetName, json) {
           break
         case 'categories':
           categories = value
+          break
+        case 'colours':
+          colours = getColours(row, json[index - 1])
+          console.log('colours', colours)
           break
         case 'event':
           gotProps = true
@@ -121,9 +139,9 @@ function generateEventHtml(workbook, sheetName, json) {
 
     // Check if the linked sheet exists
     const linked = row[col_linked] ? row[col_linked].trim().toLowerCase() : ''
-    if ( linked !== ""){
-      const sheet = workbook.SheetNames.find( name => name.trim().toLowerCase()===linked)
-      if ( !sheet ){
+    if (linked !== "") {
+      const sheet = workbook.SheetNames.find(name => name.trim().toLowerCase() === linked)
+      if (!sheet) {
         console.error(`\nERROR: processing timeline ${timeline} - found missing linked timeline: ${linked}\n`)
       }
     }
@@ -143,13 +161,17 @@ function generateEventHtml(workbook, sheetName, json) {
 
   console.log(`Found ${nRows} rows in the worksheet "${sheetName}"`)
 
+  // need to use this
+  const date = (new Date()).toISOString()
+
   html = /* html */`
   <figure is="table-timeline" 
           data-view="chart" 
           data-css-url="${cssUrl}" 
           data-images-url="${imagesUrl}" 
           data-categories="${categories}"
-          data-tag-colours=""
+          data-tag-colours="${colours}"
+          data-created="${date}"
           data-controls="view:true,tags:true,search:true,sorting:true">
     <table>
     <thead>
@@ -177,7 +199,7 @@ function generateEventHtml(workbook, sheetName, json) {
 }
 
 
-function generateTestFile(html){
+function generateTestFile(html) {
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -199,8 +221,6 @@ function generateTestFile(html){
 // Function to convert Excel sheet to HTML
 function excelToHtml(workbook, sheetName, sheet) {
 
-  // @todo need to use this
-  const date = (new Date()).toISOString()
 
   // Convert sheet to JSON
 
@@ -228,8 +248,8 @@ process.argv.forEach(val => {
     const param = parts[0].trim()
     const value = parts[1].trim()
     switch (param) {
-      case 'test': test = value.toLowerCase()==='true'; break
-      case 'input': filename = value; break
+      case 'test': test = value.toLowerCase() === 'true'; break
+      case 'input': fileName = value; break
       case 'dest': output_folder = value; break
       case 'css-url': cssUrl = value; break
       case 'images-url': imagesUrl = value; break
@@ -237,7 +257,7 @@ process.argv.forEach(val => {
   }
 });
 
-if ( test ){
+if (test) {
   cssUrl = "/exported"
   imagesUrl = "/exported"
 }
@@ -257,7 +277,7 @@ if (fileName) {
 
     if (html !== "") {
 
-      if ( test ){
+      if (test) {
         html = generateTestFile(html)
       }
 
@@ -271,7 +291,7 @@ if (fileName) {
     }
   })
 
-  if ( test ){
+  if (test) {
     // Copy files to output folder
     // fs.copyFileSync('table-timeline.js', output_folder + 'table-timeline.js');
     fs.copyFileSync('table-timeline.css', output_folder + 'table-timeline.css');
