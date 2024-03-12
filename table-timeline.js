@@ -22,7 +22,7 @@ class TableTimeline extends HTMLElement {
         this.AXIS_YEARS = 5
         this.SATURATION = "30%"
         this.LIGHTNESS = "70%"
-        console.log('created timeline')
+        // console.log('created timeline')
     }
 
 
@@ -49,7 +49,7 @@ class TableTimeline extends HTMLElement {
         }
         const customCSS = this.getColourPalette(tags)
         const title = this.querySelector('figcaption')
-        const caption = title ? `<figcaption>Timeline of the ${title.textContent}</figcaption>` : ''
+        const caption = title ? `<figcaption>Timeline of ${title.textContent}</figcaption>` : ''
         const filters = this.getTimelineControls(view)
         const filtersHtml = filters ? `<div class="filters">${filters}</div>` : ''
 
@@ -435,6 +435,7 @@ class TableTimeline extends HTMLElement {
 
     addEventHandlers() {
         const timelineDiv = this.shadow.querySelector('.table-timeline')
+        const filtersDiv = timelineDiv.querySelector('.filters')
         const containerDiv = timelineDiv.querySelector('.container')
         const summaryDiv = containerDiv.querySelector('.summary')
         const eventsDiv = containerDiv.querySelector('.events')
@@ -557,9 +558,9 @@ class TableTimeline extends HTMLElement {
         }
 
         // Event click events
-        summaryDiv.addEventListener('click', evt => {
-            // console.log('clicked summary', evt.target)
-            if (evt.target.className === 'close') {
+        containerDiv.addEventListener('click', evt => {
+            // console.log('clicked:', evt.target)
+            if (evt.target.className === 'close' || evt.target.className === 'events' ) {
                 closeSummary()
             }
         })
@@ -570,12 +571,11 @@ class TableTimeline extends HTMLElement {
                 if (selected) selected.classList.remove('selected')
                 evt.stopPropagation()
                 if (timelineDiv.getAttribute('data-view') === 'chart') {
-                    // Get position relative to the viewport, i.e. the window
-                    // and offset the summary top by negative this amount
                     event.element.classList.add('selected')
-                    const viewportOffset = eventsDiv.getBoundingClientRect();
-                    const top = viewportOffset.top < 0 ? -viewportOffset.top + 10 : 10
-                    summaryDiv.style = `margin-top:${top}px`
+                    const top = filtersDiv.getBoundingClientRect().height + 26
+                    const height = containerDiv.getBoundingClientRect().height
+                    const maxWidth = containerDiv.getBoundingClientRect().width
+                    summaryDiv.style = `top:${top}px;height:${height}px;max-width:${maxWidth}px;`
                     const dates = event.element.querySelector('.dates').outerHTML
                     const content = event.element.querySelector('.content').innerHTML
                     const image = event.element.querySelector('.event-image')
@@ -593,6 +593,7 @@ class TableTimeline extends HTMLElement {
                             </div>
                         </div>`
                     containerDiv.classList.add('show-summary')
+                    summaryDiv.scrollTo(0,0)
                 }
             })
         })

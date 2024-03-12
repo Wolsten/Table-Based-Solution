@@ -199,19 +199,19 @@ function generateEventHtml(workbook, sheetName, json) {
 }
 
 
-function generateTestFile(html) {
+function generateTestFile(title, html) {
   return `
     <!DOCTYPE html>
     <html lang="en">
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Timeline Test Page</title>
+      <title>${title}</title>
       <link rel="stylesheet" href="/test.css">
       <script src="/table-timeline.js" defer></script>
     </head>
     <body class="home">
-      <h1>Timeline Test Page</h1>
+      <h1>${title}</h1>
       ${html}
     </body>
   </html>`
@@ -266,24 +266,35 @@ if (fileName) {
 
   // Read the Excel file
   const workbook = XLSX.readFile(SOURCE_FOLDER + fileName);
+  const paths = []
 
   // Export all the sheets
   workbook.SheetNames.forEach(sheetName => {
 
     const sheet = workbook.Sheets[sheetName];
+    const fileName = sheetName.toLowerCase().replace(/( )/g, '-')
+    
+
     let html = excelToHtml(workbook, sheetName, sheet);
-
-    // console.log('sheet', sheetName, ': generated html[', html, ']')
-
     if (html !== "") {
 
       if (test) {
-        html = generateTestFile(html)
+        html = generateTestFile(sheetName, html)
+        paths.push(`<li><a href="/exported/${fileName}.html">${sheetName}</a></li>`)
       }
 
-      sheetName = sheetName.toLowerCase().replace(/( )/g, '-')
       console.log('writing file to folder', output_folder)
-      fs.writeFile(output_folder + sheetName + '.html', html, err => {
+      fs.writeFile(output_folder + fileName + '.html', html, err => {
+        if (err) {
+          console.error(err);
+        }
+      })
+    }
+  
+    if ( test && paths.length > 0 ){
+      const indexHtml = '<ul>' + paths.join('\n') + '</ul>'
+      html = generateTestFile('Index of test files', indexHtml)
+      fs.writeFile(output_folder + 'index.html', html, err => {
         if (err) {
           console.error(err);
         }
