@@ -8,6 +8,14 @@ body {
     & ol li {
         line-height: 2rem;
     }
+
+    .header-image {
+        max-height: 200px;
+    }
+    
+    .description {
+        padding: 2rem;
+    }
 }
 
 figure[is=table-timeline] {

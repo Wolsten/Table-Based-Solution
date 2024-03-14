@@ -1,4 +1,4 @@
 *.html
 ~$timelines.xlsm
-exported/*.html
-exported/*.md
+exported/
+timelines/

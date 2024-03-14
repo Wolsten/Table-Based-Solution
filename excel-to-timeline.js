@@ -18,7 +18,7 @@ const XLSX = require('xlsx');
 const SOURCE_FOLDER = './'
 
 // Props
-let output_folder = './exported/'
+let destFolder = './'
 let fileName = 'timelines.xlsm'
 let test = false
 let cssUrl = "/"
@@ -70,11 +70,13 @@ function getColours(colours, tags) {
 function generateEventHtml(workbook, sheetName, json) {
 
   let nRows = 0;
-  let categories = '';
-  let timeline = '';
-  let html = '';
+  let categories = ''
+  let timeline = ''
+  let html = ''
+  let image = ''
+  let description = ''
   let tags = []
-  let colours = '';
+  let colours = ''
   let gotProps = false
   let foundTitles = false
 
@@ -91,6 +93,12 @@ function generateEventHtml(workbook, sheetName, json) {
           break
         case 'categories':
           categories = value
+          break
+        case 'image':
+          image = value
+          break
+        case 'description':
+          description = value
           break
         case 'colours':
           colours = getColours(row, json[index - 1])
@@ -123,7 +131,7 @@ function generateEventHtml(workbook, sheetName, json) {
       col_linked = getTitle('linked')
       col_image = getTitle('image')
 
-      if (errors.length > 0) console.error(`ERROR: Sheet "${sheetName}" is missing the following columns: [${errors.join(', ')}]`)
+      if (errors.length > 0) console.error(`\nERROR: Sheet "${sheetName}" is missing the following columns: [${errors.join(', ')}]`)
 
       return
     }
@@ -164,7 +172,7 @@ function generateEventHtml(workbook, sheetName, json) {
 
   html = /* html */`
   <figure is="table-timeline" 
-          data-view="chart" 
+          data-view="chart"
           data-css-url="${cssUrl}" 
           data-images-url="${imagesUrl}" 
           data-categories="${categories}"
@@ -193,11 +201,12 @@ function generateEventHtml(workbook, sheetName, json) {
 
   // console.log('RETURNING html', html)
 
-  return html
+  return {html,image,description}
 }
 
 
 function generateTestFile(title, html) {
+
   return /* HTML */ `
     <!DOCTYPE html>
     <html lang="en">
@@ -222,16 +231,18 @@ function excelToHtml(workbook, sheetName, sheet) {
   // Convert sheet to JSON
   const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-  if (json[0][0] !== "timeline") return ""
+  if (json[0][0].toLowerCase() !== "timeline") return ""
 
   // Generate HTML
-  let html = generateEventHtml(workbook, sheetName, json)
+  const results = generateEventHtml(workbook, sheetName, json)
 
   // console.log('pre pretty printed html', html)
   // html = prettyPrint(html)
 
-  return html
+  return results
 }
+
+
 
 // Example usage: node excelToHtml.js yourExcelFile.xlsx
 // print process.argv
@@ -242,58 +253,98 @@ process.argv.forEach(val => {
     const param = parts[0].trim()
     const value = parts[1].trim()
     switch (param) {
-      case 'test': test = value.toLowerCase() === 'true'; break
-      case 'input': fileName = value; break
-      case 'dest': output_folder = value; break
-      case 'css-url': cssUrl = value; break
-      case 'images-url': imagesUrl = value; break
+      case 'test': 
+        test = value.toLowerCase() === 'true'
+        break
+      case 'input': 
+        fileName = value
+        break
+      case 'dest': 
+        destFolder = value
+        if ( !destFolder.endsWith('/') ) {
+          destFolder += '/'
+        }
+        break
+      case 'css-url': 
+        cssUrl = value
+        break
+      case 'images-url': 
+        imagesUrl = value
+        break
     }
   }
 });
 
-if (fileName) {
+if (!fileName) {
+  console.error(`\nERROR: Please provide the name of the Excel file. The generated HTML files will be places in your ${output_folder} folder.\n`)
+  return
+}
 
-  // Read the Excel file
-  const workbook = XLSX.readFile(SOURCE_FOLDER + fileName);
-  const paths = []
+// Read the Excel file
+const workbook = XLSX.readFile(SOURCE_FOLDER + fileName);
+const paths = []
 
-  // Export all the sheets
-  workbook.SheetNames.forEach(sheetName => {
-
-    const sheet = workbook.Sheets[sheetName];
-    const fileName = sheetName.toLowerCase().replace(/( )/g, '-')
-    
-
-    let html = excelToHtml(workbook, sheetName, sheet);
-    if (html !== "") {
-
-      if (test) {
-        html = '<p><a href="/">Home</a></p>' + html
-        html = generateTestFile(sheetName, html)
-        paths.push(`<li><a href="/exported/${fileName}.html">${sheetName}</a></li>`)
-      }
-
-      const path = output_folder + fileName + '.html'
-      try {
-        fs.writeFileSync(path, html)
-        console.log('wrote file to folder', path)
-      } catch {
-        console.error(err);
-      }
-    }
-  
-    if ( test && paths.length > 0 ){
-      const indexHtml = '<ul>' + paths.join('') + '</ul>'
-      html = generateTestFile('Index of test files', indexHtml)
-      try {
-        fs.writeFileSync('index.html', html)
-        console.log('\nWrote index file', html)
-      } catch {
-        console.error(err);
-      }
-    }
-  })
-
+// Prepare dest folder
+const timelinesFolder = test ? 'timelines/' : ''
+const folder = destFolder + timelinesFolder
+if ( fs.existsSync(folder) ){
+  try {
+    fs.rmSync(folder,{recursive:true}) 
+  } catch {
+    console.error(`ERROR: There was an error attempting to delete previous dest folder "${folder}"`)
+  }
 } else {
-  console.warn(`\nPlease provide the name of the Excel file. The generated HTML files will be places in your ${output_folder} folder.\n`);
+  try {
+    fs.mkdirSync(folder, {recursive:true})
+  } catch {
+    console.error(`ERROR: There was an error attempting to create dest folder "${folder}"`)
+  }
+}
+
+// Export all the sheets
+workbook.SheetNames.forEach(sheetName => {
+
+  const sheet = workbook.Sheets[sheetName];
+  const fileName = sheetName.toLowerCase().replace(/( )/g, '-')
+  const results = excelToHtml(workbook, sheetName, sheet);
+  let html = results.html
+  if (html === "") {
+    console.error('ERROR: cannot find a timeline in the worksheet', sheetName)
+    return
+  }
+
+  if (test) {
+    let imageHtml = ''
+    let descriptionHtml = ''
+    if ( results.image ){
+      imageHtml = `<img class="header-image" src="/${results.image}"/>`
+    }
+    if ( results.description ){
+      descriptionHtml = `<div class="description">${results.description}</div>`
+    }
+    html = '<p><a href="/">Home</a></p>' + imageHtml + descriptionHtml + html
+    html = generateTestFile(sheetName, html, )
+    paths.push(`<li><a href="/${timelinesFolder}${fileName}.html">${sheetName}</a></li>`)
+  }
+
+  // Output the timelines
+  let path = folder + fileName + '.html'
+  try {
+    fs.writeFileSync(path, html)
+  } catch {
+    console.error(`ERROR: There was an error attempting to write the file to "${path}"`)
+    return
+  }
+})
+
+// Outout the index file
+if (test && paths.length > 0) {
+  const indexHtml = '<ul>' + paths.join('') + '</ul>'
+  const html = generateTestFile('Index of test files', indexHtml)
+  try {
+    let path = destFolder + 'index.html'
+    fs.writeFileSync(path, html)
+  } catch {
+    console.error(`ERROR: There was an error attempting to write the file to "${path}"`)
+  }
 }

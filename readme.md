@@ -53,7 +53,7 @@ The full set of parameters are as follows:
 | --------- | ------ | ----------- |
 | test | true or false | Default is `false`. When `false` only the actual timeline HTML is generated, and the resulting code can be included in other HTML pages or markdown (with suitable configuration). When set to `true` a full HTML file is generated which can be tested in a browser, e.g. using LiveServer. |
 | input | string | The name of the excel workbook to use as the source of timelines. If not specified the example workbook `timelines.xlsm` is used. |
-| dest | string | The full path for where to save the generated HTML files. If not specified the default is `/exported`. |
+| dest | string | The full path for where to save the generated HTML files. If not specified the default is `./timelines`, i.e. a new folder within the build directory. |
 | css-url | string | This should be a root relative url to where to find the table-timeline.css stylesheet. The default is "/" |
 | images-url | string | This should be a root relative url to where to find any timeline or event header images. The default is "/" |
 ||||
