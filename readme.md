@@ -1,6 +1,6 @@
 # Table Timeline
 
-27nd February 2024
+13th March 2024
 
 ![Table Timeline](table-timeline.png)
 
@@ -15,7 +15,6 @@ $ npm install xlsx
 ```
 
 Full details for other ways to install are provided here: https://www.npmjs.com/package/xlsx
-
 
 
 ## Installation
@@ -56,7 +55,7 @@ The full set of parameters are as follows:
 | input | string | The name of the excel workbook to use as the source of timelines. If not specified the example workbook `timelines.xlsm` is used. |
 | dest | string | The full path for where to save the generated HTML files. If not specified the default is `/exported`. |
 | css-url | string | This should be a root relative url to where to find the table-timeline.css stylesheet. The default is "/" |
-| images-url | string | This should be a root relative url to where to find any event header images. The default is "/" |
+| images-url | string | This should be a root relative url to where to find any timeline or event header images. The default is "/" |
 ||||
 
 
@@ -159,7 +158,7 @@ Optional event image links should be specified with a root relative url, e.g.:
 /images/my-image.webp
 ```
 
-according to where you store your images. Note that images are not processed or optimised in any way so you will need to ensure that image sizes are not too large, particularly for a large timeline. Images are however set to `load="lazy"`.
+according to where you store your images. Note that images are not processed or optimised in any way so you will need to ensure that image sizes are not too large, particularly for a large timeline. Images are however set to lazy load using `load="lazy"`.
 
 ### Date formats
 

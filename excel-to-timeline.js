@@ -9,7 +9,7 @@
 // npm install xlsx
 // node excelToHtml yourExcelFile.xlsx
 // Author: Steve Davison
-// Date: 1st March 2024
+// Date: 13th March 2024
 // Licence: MIT
 
 
@@ -94,7 +94,6 @@ function generateEventHtml(workbook, sheetName, json) {
           break
         case 'colours':
           colours = getColours(row, json[index - 1])
-          console.log('colours', colours)
           break
         case 'event':
           gotProps = true
@@ -105,7 +104,6 @@ function generateEventHtml(workbook, sheetName, json) {
     }
 
     if (foundTitles) {
-      // console.log('Getting titles')
       foundTitles = false
 
       const getTitle = function (title) {
@@ -200,7 +198,7 @@ function generateEventHtml(workbook, sheetName, json) {
 
 
 function generateTestFile(title, html) {
-  return `
+  return /* HTML */ `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -221,12 +219,8 @@ function generateTestFile(title, html) {
 // Function to convert Excel sheet to HTML
 function excelToHtml(workbook, sheetName, sheet) {
 
-
   // Convert sheet to JSON
-
   const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-  // console.log('json', json)
 
   if (json[0][0] !== "timeline") return ""
 
@@ -257,11 +251,6 @@ process.argv.forEach(val => {
   }
 });
 
-if (test) {
-  cssUrl = "/exported"
-  imagesUrl = "/exported"
-}
-
 if (fileName) {
 
   // Read the Excel file
@@ -279,35 +268,31 @@ if (fileName) {
     if (html !== "") {
 
       if (test) {
+        html = '<p><a href="/">Home</a></p>' + html
         html = generateTestFile(sheetName, html)
         paths.push(`<li><a href="/exported/${fileName}.html">${sheetName}</a></li>`)
       }
 
-      console.log('writing file to folder', output_folder)
-      fs.writeFile(output_folder + fileName + '.html', html, err => {
-        if (err) {
-          console.error(err);
-        }
-      })
+      const path = output_folder + fileName + '.html'
+      try {
+        fs.writeFileSync(path, html)
+        console.log('wrote file to folder', path)
+      } catch {
+        console.error(err);
+      }
     }
   
     if ( test && paths.length > 0 ){
-      const indexHtml = '<ul>' + paths.join('\n') + '</ul>'
+      const indexHtml = '<ul>' + paths.join('') + '</ul>'
       html = generateTestFile('Index of test files', indexHtml)
-      fs.writeFile(output_folder + 'index.html', html, err => {
-        if (err) {
-          console.error(err);
-        }
-      })
+      try {
+        fs.writeFileSync('index.html', html)
+        console.log('\nWrote index file', html)
+      } catch {
+        console.error(err);
+      }
     }
   })
-
-  if (test) {
-    // Copy files to output folder
-    // fs.copyFileSync('table-timeline.js', output_folder + 'table-timeline.js');
-    fs.copyFileSync('table-timeline.css', output_folder + 'table-timeline.css');
-    fs.copyFileSync('test.css', output_folder + 'test.css');
-  }
 
 } else {
   console.warn(`\nPlease provide the name of the Excel file. The generated HTML files will be places in your ${output_folder} folder.\n`);

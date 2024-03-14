@@ -56,7 +56,6 @@
     .filter-results.got-results {
         display:flex;
         opacity:1;
-        /* flex-basis:100%; */
         justify-content: center;
 
         & span {
@@ -73,7 +72,7 @@
         color:var(--colour-darkest);
         cursor:pointer;
         
-        &:hover{
+        &:hover {
             border-color:var(--colour-normal);
         }
     }
@@ -258,6 +257,7 @@ figcaption {
 [data-view="text"] .event {
     margin-left: 0 !important;
     width: auto !important;
+    border-bottom: 1px solid var(--colour-darker);
     .dates {
         display: inline-block;
         &::before {
@@ -274,7 +274,6 @@ figcaption {
     .content {
         margin-top: 0.5rem;
     }
-    border-bottom: 1px solid var(--colour-darker);
 }
 
 /* event-image */

@@ -136,7 +136,7 @@ class TableTimeline extends HTMLElement {
         const start = this.readDate(eventElement.querySelector('td:nth-child(2)').textContent.trim())
         const end = this.readDate(eventElement.querySelector('td:nth-child(3)').textContent.trim())
         const tag = eventElement.querySelector('td:nth-child(4)').textContent.trim()
-        const content = this.convertLinks(eventElement.querySelector('td:nth-child(5)').innerHTML.trim())
+        const content = eventElement.querySelector('td:nth-child(5)').innerHTML.trim()
         const citations = eventElement.querySelector('td:nth-child(6)').innerHTML.trim()
         const link = eventElement.querySelector('td:nth-child(7)').innerHTML.trim()
         const image = eventElement.querySelector('td:nth-child(8)').innerHTML.trim()
@@ -321,14 +321,11 @@ class TableTimeline extends HTMLElement {
             citationsList.forEach(citation => content += `<cite>${citation}</cite>`)
         }
 
-        // Construct a link - assumes that all timeline fiels are in the same
-        // folder and that urls are generated from links in the same way that 
-        // the website generator (e.g. Hugo) does it, e.g. replacing spaces
+        // Construct a link - assumes that all timeline files are in the same
+        // folder and that urls are generated from links by replacing spaces
         // with hyphens
         if (event.link) {
-            // console.log('pathname', window.location.pathname)
             let parts = window.location.pathname.split('/')
-            // parts = ['', 'deeper', 'posts', 'this-post/', '']
             parts = parts.filter(part => part !== '')
             let prefix = ''
             parts.forEach((part, index) => {
@@ -609,8 +606,8 @@ class TableTimeline extends HTMLElement {
         // Find all links not preceded by a quote (single or double)
         // This will prevent conversion of form actions and other
         // quoted links
-        const regex = /[^"'](https?:\/\/[\w.,-_?=&\/;]+)/gm
-        const subst = /* html */` <a href="$1">$1</a>`
+        const regex = /(?:^| |\n|[^"'])(https?:\/\/[\w.,-_?=&\/;]+)(?:^| |\n|[^"'])/gm
+        const subst = /* html */` <a href="$1">$1</a> `
         if (inputString !== '') {
             inputString = inputString.replace(regex, subst)
         }

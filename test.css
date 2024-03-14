@@ -3,7 +3,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 1rem 5%;
+    padding: 1rem;
 
     & ol li {
         line-height: 2rem;
@@ -12,4 +12,5 @@ body {
 
 figure[is=table-timeline] {
     margin: 0;
+    width:100%;
 }
