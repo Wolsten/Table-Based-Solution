@@ -106,7 +106,7 @@
         border-color:var(--colour-normal);
     }
 
-    &.tags {
+    &.categories {
         & label {
             & span {
                 background-color: var(--colour-background);
@@ -144,14 +144,14 @@
         }
     }
 
-    &.tags {
+    &.categories {
         & input {
             display: none;
         }
         & label span {
             border-bottom-width: 6px;
             border-bottom-style: solid;
-            /* Individual tag colours specified in javascript */
+            /* Individual category colours specified in javascript */
         }
     }
 
@@ -178,14 +178,14 @@
 /* Category indicators */
 .summary .content,
 .event {
-    .dates-tag {
+    .dates-category {
         display: flex;
         justify-content: space-between;
     }
-    .tag {
+    .category {
         position: relative;
     }
-    .tag::before {
+    .category::before {
         display: inline-block;
         position: relative;
         content: "*";
@@ -195,7 +195,7 @@
         margin-right: 0.3rem;
         top: 0.3rem;
     }
-    /* tag colours specified in javascript */
+    /* category colours specified in javascript */
 }
 
 .event {
@@ -267,7 +267,7 @@ figcaption {
             content: ")";
         }
     }
-    .tag {
+    .category {
         display: inline-block;
         margin-left: 0.6rem;
     }
@@ -361,6 +361,7 @@ figcaption {
         .summary {
             opacity: 1;
             visibility: visible;
+            min-width: 46% !important;
             max-width: 46% !important;
             padding: 0.5rem;
             .close {
@@ -420,7 +421,7 @@ figcaption {
             }
         }
         .dates,
-        .tag,
+        .category,
         .content {
             display: none;
         }
@@ -445,12 +446,11 @@ figcaption {
     [data-view="chart"] .container.show-summary {
         gap: 0;
         .summary {
-            /* flex-basis: 100%; */
             margin-right:1rem;
+            min-width:100%;
             max-width:100%;
         }
         .events {
-            /* flex-basis:0; */
             width:0;
             opacity: 0;
             visibility: hidden;

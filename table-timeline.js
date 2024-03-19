@@ -7,7 +7,7 @@ class TableTimeline extends HTMLElement {
     static AXIS_YEARS
 
     shadow
-    eventTags
+    eventCategories
     events
     start
     end
@@ -34,11 +34,11 @@ class TableTimeline extends HTMLElement {
     initTimeline() {
         this.controls = this.getControl(this.getAttribute('data-controls'))
 
-        // Process events up front to collect the tags
+        // Process events up front to collect the categories
         this.processEvents('table tbody tr')
 
         const view = this.getAttribute('data-view') || 'chart'
-        const tags = this.getAttribute('data-tag-colours') || ''
+        const categories = this.getAttribute('data-category-colours') || ''
         let cssUrl = this.getAttribute('data-css-url') || '/'
         if (!cssUrl.endsWith('/')) {
             cssUrl += '/'
@@ -47,7 +47,7 @@ class TableTimeline extends HTMLElement {
         if (!imagesUrl.endsWith('/')) {
             imagesUrl += '/'
         }
-        const customCSS = this.getColourPalette(tags)
+        const customCSS = this.getColourPalette(categories)
         const title = this.querySelector('figcaption')
         const caption = title ? `<figcaption>Timeline of ${title.textContent}</figcaption>` : ''
         const filters = this.getTimelineControls(view)
@@ -96,7 +96,7 @@ class TableTimeline extends HTMLElement {
         const defaults = {
             search: true,
             view: true,
-            tags: true,
+            categories: true,
             sorting: true,
             test: false
         }
@@ -114,8 +114,8 @@ class TableTimeline extends HTMLElement {
                         case 'view':
                             defaults.view = value === 'true'
                             break;
-                        case 'tags':
-                            defaults.tags = value === 'true'
+                        case 'categories':
+                            defaults.categories = value === 'true'
                             break;
                         case 'sorting':
                             defaults.sorting = value === 'true'
@@ -135,12 +135,12 @@ class TableTimeline extends HTMLElement {
         const title = eventElement.querySelector('td:nth-child(1)').textContent.trim()
         const start = this.readDate(eventElement.querySelector('td:nth-child(2)').textContent.trim())
         const end = this.readDate(eventElement.querySelector('td:nth-child(3)').textContent.trim())
-        const tag = eventElement.querySelector('td:nth-child(4)').textContent.trim()
+        const category = eventElement.querySelector('td:nth-child(4)').textContent.trim()
         const content = eventElement.querySelector('td:nth-child(5)').innerHTML.trim()
         const citations = eventElement.querySelector('td:nth-child(6)').innerHTML.trim()
         const link = eventElement.querySelector('td:nth-child(7)').innerHTML.trim()
         const image = eventElement.querySelector('td:nth-child(8)').innerHTML.trim()
-        return { title, start, end, tag, content, citations, link, image, margin: 0, width: 0, tagIndex: -1, element: null }
+        return { title, start, end, category, content, citations, link, image, margin: 0, width: 0, categoryIndex: -1, element: null }
     }
 
 
@@ -154,14 +154,14 @@ class TableTimeline extends HTMLElement {
         const eventElements = this.querySelectorAll(selector)
         // console.log('event elements', eventElements)
         this.events = []
-        this.eventTags = []
+        this.eventCategories = []
         // Extra data from each event and parse start and end dates
         eventElements.forEach(el => {
             const event = this.parseEvent(el)
             this.events.push(event)
-            // Unique tags
-            if (!this.eventTags.find(tag => tag === event.tag)) {
-                this.eventTags.push(event.tag)
+            // Unique categories
+            if (!this.eventCategories.find(category => category === event.category)) {
+                this.eventCategories.push(event.category)
             }
             // Extreme dates
             if (event.start.decimal < this.start.decimal) {
@@ -178,8 +178,8 @@ class TableTimeline extends HTMLElement {
         this.range = this.getRange()
         this.events.forEach(event => {
             // Category index
-            const tagIndex = this.eventTags.findIndex(tag => tag === event.tag)
-            event.tagIndex = tagIndex
+            const categoryIndex = this.eventCategories.findIndex(category => category === event.category)
+            event.categoryIndex = categoryIndex
             // Margin and width
             const endDecimal = event.end.type !== 'none' ? event.end.decimal : event.start.decimal
             event.margin = 1.0 * (100 * (event.start.decimal - this.start.decimal) / this.range).toFixed(1)
@@ -195,66 +195,65 @@ class TableTimeline extends HTMLElement {
         // console.log('events', this.events, this.eventCategories)
     }
 
-    getColourPalette(tagColourString) {
-        // console.log('colour palette in style?', tagColourString)
+    getColourPalette(categoryColourString) {
+        // console.log('colour palette in style?', categoryColourString)
         // console.log('loading custom palette for timeline', timeline)
         let palette = ''
-        // Extract tags from the timeline tags property
-        tagColourString = tagColourString.trim()
-        const tagColours = tagColourString.split(',')
-        const tagColourTable = []
-        tagColours.forEach(tag => {
-            tag = tag.trim()
-            if (tag && tag.includes(':')) {
-                const parts = tag.split(':')
+        // Extract categories from the timeline categories property
+        categoryColourString = categoryColourString.trim()
+        const categoryColours = categoryColourString.split(',')
+        const categoryColourTable = []
+        categoryColours.forEach(category => {
+            category = category.trim()
+            if (category && category.includes(':')) {
+                const parts = category.split(':')
                 if (parts.length === 2) {
-                    const tag = parts[0].trim()
+                    const category = parts[0].trim()
                     const colour = parts[1].trim()
-                    tagColourTable.push({ tag, colour })
+                    categoryColourTable.push({ category, colour })
                 }
             }
         })
-        const interval = Math.floor(245 / this.eventTags.length)
+        const interval = Math.floor(245 / this.eventCategories.length)
         let hue = 10
-        let tagRules = []
+        let categoryRules = []
         let colour = ''
-        this.eventTags.forEach((tag, index) => {
-            const match = tagColourTable.find(entry => entry.tag === tag.toLowerCase())
-            // console.log('checking tag', tag, 'found match', match, 'at index', index)
+        this.eventCategories.forEach((category, index) => {
+            const match = categoryColourTable.find(entry => entry.category === category.toLowerCase())
+            // console.log('checking category', category, 'found match', match, 'at index', index)
             if (match) {
                 colour = match.colour
             } else {
                 colour = `hsl(${hue}, ${this.SATURATION}, ${this.LIGHTNESS})`
                 hue += interval
             }
-            tagRules.push(`.filters form.tags label.tag-${index} span {`)
-            tagRules.push(`    border-bottom-color: ${colour}`)
-            tagRules.push(`}`)
-            tagRules.push(`.summary .content[data-tag-index="${index}"] .tag::before,`)
-            tagRules.push(`.event[data-tag-index="${index}"] .tag::before,`)
-            tagRules.push(`[data-view="chart"] .event[data-tag-index="${index}"] {`)
-            tagRules.push(`    background-color: ${colour}`)
-            tagRules.push(`}`)
+            categoryRules.push(`.filters form.categories label.category-${index} span {`)
+            categoryRules.push(`    border-bottom-color: ${colour}`)
+            categoryRules.push(`}`)
+            categoryRules.push(`.summary .content[data-category-index="${index}"] .category::before,`)
+            categoryRules.push(`.event[data-category-index="${index}"] .category::before,`)
+            categoryRules.push(`[data-view="chart"] .event[data-category-index="${index}"] {`)
+            categoryRules.push(`    background-color: ${colour}`)
+            categoryRules.push(`}`)
         })
         // console.log('new palette', palette)
-        return `<style>\n${tagRules.join('\n')}\n</style>`
+        return `<style>\n${categoryRules.join('\n')}\n</style>`
     }
 
 
     getTimelineControls(view) {
         let html = ''
         let filter = false
-        // console.log('tags', this.tagsCategories)
-        if (this.controls.tags && this.eventTags.length > 1) {
-            this.eventTags.forEach((tag, index) => {
+        if (this.controls.categories && this.eventCategories.length > 1) {
+            this.eventCategories.forEach((category, index) => {
                 html += /* html */`
-                    <label title="Hide/show events with this tag" class="tag-${index}">
-                        <span>${tag}</span>
-                        <input type="checkbox" name="tag[${index}]" value="${index}" checked />
+                    <label title="Hide/show events with this category" class="category-${index}">
+                        <span>${category}</span>
+                        <input type="checkbox" name="category[${index}]" value="${index}" checked />
                     </label>`
             })
             html = /* html */
-                `<form class="tags">
+                `<form class="categories">
                     ${html}
                 </form>`
             filter = true
@@ -269,15 +268,15 @@ class TableTimeline extends HTMLElement {
             filter = true
         }
 
-        if (this.controls.sorting && this.eventTags.length > 1) {
-            const other =  this.DEFAULT_SORT === 'date' ? 'Switch to tag sorting' : 'Switch to date sorting'
+        if (this.controls.sorting && this.eventCategories.length > 1) {
+            const other =  this.DEFAULT_SORT === 'date' ? 'Switch to category sorting' : 'Switch to date sorting'
             const checked = this.DEFAULT_SORT === 'date' ? "checked" : ""
             const state = this.DEFAULT_SORT === 'date' ? "on" : "off"
             html += /* html */
                 `<form class="sorting switch">
                     <label title="${other}">
                         <input type="checkbox" name="sorting" value="${state}"/>
-                        <span class="off">Tag</span><span class="on">Date</span>
+                        <span class="off">Category</span><span class="on">Date</span>
                     </label>
                 </form>`
         }
@@ -344,19 +343,19 @@ class TableTimeline extends HTMLElement {
         const img = event.image ? `<div class="event-image"><img src="${imagesUrl}${event.image}" loading="lazy"></div>` : ''
         const newEventElement = document.createElement('div')
         newEventElement.className = `event${textAlign}`
-        newEventElement.setAttribute('data-tag-index', event.tagIndex)
+        newEventElement.setAttribute('data-category-index', event.categoryIndex)
         newEventElement.style = `margin-left: ${event.margin}%; width: ${event.width}%;`
         newEventElement.innerHTML = /* html */`
             ${img}
             <h3 class="title">${event.title}</h3>
-            <div class="dates-tag">
+            <div class="dates-category">
                 <span class="dates">
                     <span class="start">
                         ${event.start.formatted}
                     </span>
                     ${endDate}
                 </span>
-                <span class="tag">${event.tag}</span>
+                <span class="category">${event.category}</span>
             </div>
             <div class="content">
                 ${content}
@@ -408,11 +407,11 @@ class TableTimeline extends HTMLElement {
                 }
                 return 0
             })
-        } else if (value === 'tag') {
+        } else if (value === 'category') {
             this.events.sort((a, b) => {
-                if (a.tagIndex < b.tagIndex) {
+                if (a.categoryIndex < b.categoryIndex) {
                     return -1
-                } else if (a.tagIndex > b.tagIndex) {
+                } else if (a.categoryIndex > b.categoryIndex) {
                     return 1
                 }
                 return 0
@@ -438,7 +437,7 @@ class TableTimeline extends HTMLElement {
         const eventsDiv = containerDiv.querySelector('.events')
         const filterResultsDiv = timelineDiv.querySelector('.filter-results')
         const searchInput = timelineDiv.querySelector('form.search input')
-        const tagInputs = timelineDiv.querySelectorAll('form.tags input')
+        const categoryInputs = timelineDiv.querySelectorAll('form.categories input')
         const closeSummary = function () {
             containerDiv.classList.remove('show-summary')
             summaryDiv.innerHTML = ''
@@ -461,8 +460,8 @@ class TableTimeline extends HTMLElement {
                     const events = eventsDiv.querySelectorAll('.event')
                     filterResultsDiv.classList.remove('got-results')
                     if (searchInput) searchInput.value = ''
-                    if (tagInputs.length > 0) {
-                        tagInputs.forEach(input => input.setAttribute('checked', 'checked'))
+                    if (categoryInputs.length > 0) {
+                        categoryInputs.forEach(input => input.setAttribute('checked', 'checked'))
                     }
                     events.forEach(event => {
                         event.classList.remove('hide')
@@ -496,21 +495,21 @@ class TableTimeline extends HTMLElement {
                 if ( input.value === 'off' ){
                     console.log('was off when clicked')
                     input.value = 'on'
-                    label.title = "Switch to tag sorting"
+                    label.title = "Switch to category sorting"
                     this.sortEvents('date')
                 } else {
                     console.log('was on when clicked')
                     input.value = 'off'
                     label.title = "Switch to date sorting"
-                    this.sortEvents('tag')
+                    this.sortEvents('category')
                 }
                 this.redrawEvents()
             })
         }
-        // Tag selections
-        if (this.controls.tags) {
+        // Category selections
+        if (this.controls.categories) {
             let hide = false
-            tagInputs.forEach(input => {
+            categoryInputs.forEach(input => {
                 input.addEventListener('click', event => {
                     const option = event.target
                     const value = option.value
@@ -521,7 +520,7 @@ class TableTimeline extends HTMLElement {
                         input.removeAttribute('checked')
                     }
                     this.events.forEach(event => {
-                        if (event.element.getAttribute('data-tag-index') === value) {
+                        if (event.element.getAttribute('data-category-index') === value) {
                             if (checked) {
                                 event.element.classList.remove("hide")
                             } else {
@@ -572,19 +571,19 @@ class TableTimeline extends HTMLElement {
                     const top = filtersDiv.getBoundingClientRect().height + 26
                     const height = containerDiv.getBoundingClientRect().height
                     const maxWidth = containerDiv.getBoundingClientRect().width
-                    summaryDiv.style = `top:${top}px;height:${height}px;max-width:${maxWidth}px;`
+                    summaryDiv.style = `top:${top}px;height:${height}px;min-width:${maxWidth}px;max-width:${maxWidth}px;`
                     const dates = event.element.querySelector('.dates').outerHTML
                     const content = event.element.querySelector('.content').innerHTML
                     const image = event.element.querySelector('.event-image')
                         ? event.element.querySelector('.event-image').outerHTML
                         : ''
-                    const datesTag = event.element.querySelector('.dates-tag').outerHTML
+                    const datesCategory = event.element.querySelector('.dates-category').outerHTML
                     summaryDiv.innerHTML = /* html */`
                         <button class="close">X</button>
-                        <div class="content" data-tag-index="${event.tagIndex}">
+                        <div class="content" data-category-index="${event.categoryIndex}">
                             ${image}
                             <h3 class="title">${event.title}</h3>
-                            ${datesTag}
+                            ${datesCategory}
                             <div class="body">
                                 ${content}
                             </div>
@@ -595,9 +594,6 @@ class TableTimeline extends HTMLElement {
             })
         })
     } // end addEventHandlers
-
-    //                             ${dates}
-    /* <span class="tag">${event.tag}</span> */
 
 
 

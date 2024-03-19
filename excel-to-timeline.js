@@ -18,7 +18,7 @@ const XLSX = require('xlsx');
 const SOURCE_FOLDER = './'
 
 // Props
-let destFolder = './'
+let buildFolder = 'timelines/'
 let fileName = 'timelines.xlsm'
 let test = false
 let cssUrl = "/"
@@ -27,26 +27,26 @@ let imagesUrl = "/"
 // It is important that the rawHTML shortcodes appear at the start of the line.
 // Also, to get code highlighting in VSCode for HTML need the timeline to start 
 // at the beginning of a line.
-function prettyPrint(html) {
-  while (html.includes('  ')) {
-    html = html.replace(/  /g, ' ')
-  }
-  html = html.replace(/\n /g, '')
-  html = html.replace(/<h3/g, '  <h3')
-  html = html.replace(/<h4/g, '  <h4')
-  html = html.replace(/<dl/g, '  <dl')
-  html = html.replace(/<dt/g, '    <dt')
-  html = html.replace(/<\/dl/g, '  </dl')
-  html = html.replace(/<div/g, '  <div')
-  html = html.replace(/<\/div/g, '</div')
-  html = html.replace(/<cite/g, '  <cite')
-  return html
-}
+// function prettyPrint(html) {
+//   while (html.includes('  ')) {
+//     html = html.replace(/  /g, ' ')
+//   }
+//   html = html.replace(/\n /g, '')
+//   html = html.replace(/<h3/g, '  <h3')
+//   html = html.replace(/<h4/g, '  <h4')
+//   html = html.replace(/<dl/g, '  <dl')
+//   html = html.replace(/<dt/g, '    <dt')
+//   html = html.replace(/<\/dl/g, '  </dl')
+//   html = html.replace(/<div/g, '  <div')
+//   html = html.replace(/<\/div/g, '</div')
+//   html = html.replace(/<cite/g, '  <cite')
+//   return html
+// }
 
 let col_event = -1
 let col_start = -1
 let col_end = -1
-let col_tag = -1
+let col_category = -1
 let col_content = -1
 let col_citations = -1
 let col_linked = -1
@@ -54,28 +54,28 @@ let col_image = -1
 let errors = []
 
 
-function getColours(colours, tags) {
-  let tagCol = ''
+function getColours(colours, categories) {
+  let categoryCol = ''
   colours.forEach((colour, index) => {
     if (index === 0) return
-    if (tagCol !== '') {
-      tagCol += ','
+    if (categoryCol !== '') {
+      categoryCol += ','
     }
-    tagCol += tags[index] + ':' + colour
+    categoryCol += categories[index] + ':' + colour
   })
-  return tagCol
+  return categoryCol
 }
 
 
 function generateEventHtml(workbook, sheetName, json) {
 
   let nRows = 0;
-  let categories = ''
+  let categories = []
   let timeline = ''
   let html = ''
   let image = ''
   let description = ''
-  let tags = []
+  let tags = ''
   let colours = ''
   let gotProps = false
   let foundTitles = false
@@ -91,8 +91,8 @@ function generateEventHtml(workbook, sheetName, json) {
         case 'timeline':
           timeline = value
           break
-        case 'categories':
-          categories = value
+        case 'tags':
+          tags = value
           break
         case 'image':
           image = value
@@ -125,7 +125,7 @@ function generateEventHtml(workbook, sheetName, json) {
       col_event = getTitle('event')
       col_start = getTitle('start')
       col_end = getTitle('end')
-      col_tag = getTitle('tag')
+      col_category = getTitle('category')
       col_content = getTitle('content')
       col_citations = getTitle('citations')
       col_linked = getTitle('linked')
@@ -140,8 +140,8 @@ function generateEventHtml(workbook, sheetName, json) {
 
     nRows++
 
-    const tag = row[col_tag].trim()
-    if (!tags.includes(tag)) tags.push(tag)
+    const category = row[col_category].trim()
+    if (!categories.includes(category)) categories.push(category)
 
     // Check if the linked sheet exists
     const linked = row[col_linked] ? row[col_linked].trim().toLowerCase() : ''
@@ -157,7 +157,7 @@ function generateEventHtml(workbook, sheetName, json) {
         <td>${row[col_event].trim()}</td>
         <td>${row[col_start].trim()}</td>
         <td>${row[col_end] ? row[col_end].trim() : ''}</td>
-        <td>${row[col_tag].trim()}</td>
+        <td>${row[col_category].trim()}</td>
         <td>${row[col_content].trim()}</td>
         <td>${row[col_citations] ? row[col_citations].trim() : ''}</td>
         <td>${linked}</td>
@@ -175,8 +175,8 @@ function generateEventHtml(workbook, sheetName, json) {
           data-view="chart"
           data-css-url="${cssUrl}" 
           data-images-url="${imagesUrl}" 
-          data-categories="${categories}"
-          data-tag-colours="${colours}"
+          data-tags="${tags}"
+          data-category-colours="${colours}"
           data-created="${date}"
           data-controls="view:true,tags:true,search:true,sorting:true">
     <table>
@@ -259,11 +259,11 @@ process.argv.forEach(val => {
       case 'input': 
         fileName = value
         break
-      case 'dest': 
-        destFolder = value
-        if ( !destFolder.endsWith('/') ) {
-          destFolder += '/'
+      case 'output': 
+        if ( !value.endsWith('/') ) {
+          value += '/'
         }
+        buildFolder = value
         break
       case 'css-url': 
         cssUrl = value
@@ -285,19 +285,19 @@ const workbook = XLSX.readFile(SOURCE_FOLDER + fileName);
 const paths = []
 
 // Prepare dest folder
-const timelinesFolder = test ? 'timelines/' : ''
-const folder = destFolder + timelinesFolder
-if ( fs.existsSync(folder) ){
+// const timelinesFolder = test ? 'timelines/' : ''
+// const folder = destFolder + timelinesFolder
+if ( fs.existsSync(buildFolder) ){
   try {
-    fs.rmSync(folder,{recursive:true}) 
+    fs.rmSync(buildFolder) 
   } catch {
-    console.error(`ERROR: There was an error attempting to delete previous dest folder "${folder}"`)
+    console.error(`ERROR: There was an error attempting to delete previous dest folder "${buildFolder}"`)
   }
 } else {
   try {
-    fs.mkdirSync(folder, {recursive:true})
+    fs.mkdirSync(buildFolder)
   } catch {
-    console.error(`ERROR: There was an error attempting to create dest folder "${folder}"`)
+    console.error(`ERROR: There was an error attempting to create dest folder "${buildFolder}"`)
   }
 }
 
@@ -322,13 +322,13 @@ workbook.SheetNames.forEach(sheetName => {
     if ( results.description ){
       descriptionHtml = `<div class="description">${results.description}</div>`
     }
-    html = '<p><a href="/">Home</a></p>' + imageHtml + descriptionHtml + html
-    html = generateTestFile(sheetName, html, )
-    paths.push(`<li><a href="/${timelinesFolder}${fileName}.html">${sheetName}</a></li>`)
+    html = `<p><a href="/${buildFolder}">Home</a></p>${imageHtml}${descriptionHtml}${html}`
+    html = generateTestFile(sheetName, html )
+    paths.push(`<li><a href="/${buildFolder}${fileName}.html">${sheetName}</a></li>`)
   }
 
   // Output the timelines
-  let path = folder + fileName + '.html'
+  let path = buildFolder + fileName + '.html'
   try {
     fs.writeFileSync(path, html)
   } catch {
@@ -339,10 +339,10 @@ workbook.SheetNames.forEach(sheetName => {
 
 // Outout the index file
 if (test && paths.length > 0) {
-  const indexHtml = '<ul>' + paths.join('') + '</ul>'
+  const indexHtml = '<ul>\n\t\t\t\t' + paths.join('\n\t\t\t\t') + '\n\t\t\t</ul>'
   const html = generateTestFile('Index of test files', indexHtml)
   try {
-    let path = destFolder + 'index.html'
+    let path = buildFolder + 'index.html'
     fs.writeFileSync(path, html)
   } catch {
     console.error(`ERROR: There was an error attempting to write the file to "${path}"`)

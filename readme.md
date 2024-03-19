@@ -1,6 +1,6 @@
 # Table Timeline
 
-13th March 2024
+19th March 2024
 
 ![Table Timeline](table-timeline.png)
 
@@ -31,14 +31,6 @@ Add the script tag to the `<head>` section, using the `defer` attribute:
 
 The url location of the style sheet should be set as an option using the data-css-url parameter in any included table-timeline element (see later). This means that you have the option of customising the stylesheet for each timeline.
 
-### Installing as a Git Submodule
-
-Issue the following command to install table-timeline in your website in a specific folder, such as `static/timeline` for example:
-
-```
-git submodule add https://github.com/Wolsten/Table-Timeline.git static/timeline
-```
-
 ## Quick Start
 
 To generate a number of sample timelines for testing run the following script:
@@ -53,7 +45,7 @@ The full set of parameters are as follows:
 | --------- | ------ | ----------- |
 | test | true or false | Default is `false`. When `false` only the actual timeline HTML is generated, and the resulting code can be included in other HTML pages or markdown (with suitable configuration). When set to `true` a full HTML file is generated which can be tested in a browser, e.g. using LiveServer. |
 | input | string | The name of the excel workbook to use as the source of timelines. If not specified the example workbook `timelines.xlsm` is used. |
-| dest | string | The full path for where to save the generated HTML files. If not specified the default is `./timelines`, i.e. a new folder within the build directory. |
+| output | string | The relative path for where to save the generated HTML files. If not specified the default is `timelines/`. |
 | css-url | string | This should be a root relative url to where to find the table-timeline.css stylesheet. The default is "/" |
 | images-url | string | This should be a root relative url to where to find any timeline or event header images. The default is "/" |
 ||||
@@ -71,8 +63,8 @@ The component includes various inputs for filtering and sorting the events and t
 | --------- | ----- | ----- |
 | search | `true` or `false` | Display search box? |
 | view   | `true` or `false` | Display view switch toggle buttons |
-| tags   | `true` or `false` | Display tag filter buttons |
-| sorting | `true` or `false` | Display sorting options (date/tag) |
+| categories   | `true` or `false` | Display category filter buttons |
+| sorting | `true` or `false` | Display sorting options (date/category) |
 | test | `false` or `true` | If true any linked timeline links will include a `.html` suffix. |
 ||||
 
@@ -89,17 +81,17 @@ data-view="chart or text"
 
 If not specified the default view is `chart`.
 
-Finally, the component will generate default colours for each event according to its tag. You can override this using the `data-tag-colours` attribute as follows:
+Finally, the component will generate default colours for each event according to its category. You can override this using the `data-category-colours` attribute as follows:
 
 ```
-data-tag-colours="fruit:#E49EDD,vegetable:#4D93D9,animal:#83CCEB"
+data-category-colours="fruit:#E49EDD,vegetable:#4D93D9,animal:#83CCEB"
 ```
 
-The tag colours should be specified as hyphenated versions of the tag name. Therefore, the tag name `large animals` would be specified by `large-animals`.
+The category colours should be specified as hyphenated versions of the category name. Therefore, the category name `large animals` would be specified by `large-animals`.
 
 You can specify your colours as any valid CSS colour value. The example workbook `timelines.xlsm` shows that you can set the colours (optionally) in each sheet. 
 
-Simply insert two rows before the start of the events with the first called `tags` and the second called `colours` (note both must be lower case). In the tags row list the tags used in your events table (or at least the ones you want to override the colours for). Then below each tag in the colours row, set the background colour of the cell as required. When you save the workbook, a macro is run to insert matching Hex colour names into the coloured cells. See the two sheets `UK Prime Ministers` and `History of the Universe` for examples.
+Simply insert two rows before the start of the events with the first called `categories` and the second called `colours`. In the categories row list the categories used in your events table (or at least the ones you want to override the colours for). Then below each category in the colours row, set the background colour of the cell as required. When you save the workbook, a macro is run to insert matching Hex colour names into the coloured cells. See the two sheets `UK Prime Ministers` and `History of the Universe` for examples.
 
 So an example table timeline would be structured as follows:
 
@@ -110,7 +102,7 @@ So an example table timeline would be structured as follows:
     [data-images-url="/images"]
     [data-css-url="/styles"]
     [data-controls="sorting:false,test:true"]
-    [data-tag-colours="fruit:#E49EDD,vegetable:#4D93D9,animal:#83CCEB"]
+    [data-category-colours="fruit:#E49EDD,vegetable:#4D93D9,animal:#83CCEB"]
 >
     <table>
         <!-- Table head -->
@@ -119,7 +111,7 @@ So an example table timeline would be structured as follows:
                 <th>event</th>
                 <th>start</th>
                 <th>end</th>
-                <th>tag</th>
+                <th>category</th>
                 <th>content</th>
                 <th>citations</th>
                 <th>link</th>
@@ -133,7 +125,7 @@ So an example table timeline would be structured as follows:
                 <th>event title</th>
                 <th>event start data</th>
                 <th>event end date</th>
-                <th>event tag (the type of event)</th>
+                <th>event category</th>
                 <th>event content</th>
                 <th>event citations</th>
                 <th>event link - name of a linked timeline</th>
@@ -182,15 +174,13 @@ At the top of the timeline, depending on the configuration options specified, th
 
 | Filter | Usage |
 | ------ | ----- |
-| Tags   | All tags found in your timeline are listed, and by default all are shown as selected. Click a tag to toggle on and off the display of events with that tag. The number of matching events is shown along with a button to reset the filter. |
+| Categories   | All categories found in your timeline are listed, and by default all are shown as selected. Click a category to toggle on and off the display of events with that category. The number of matching events is shown along with a button to reset the filter. |
 | Search | Enter search text to find events which contain the text in their title or summary. The number of matching events is shown along with a button to reset the filter. |
-| Sort | Sort the events by date or tag order |
+| Sort | Sort the events by date or category order |
 | View | Switch between tabular text view and the waterfall chart view |
 |||
 
 If you click on an event in the chart view a summary panel will display the summary information along with any citations, image or link to another timeline.
-
-
 
 ## License
 
