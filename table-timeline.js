@@ -454,7 +454,7 @@ class TableTimeline extends HTMLElement {
         }
         if (filterResultsDiv) {
             filterResultsDiv.addEventListener('click', evt => {
-                console.log('clicked', evt.target)
+                // console.log('clicked', evt.target)
                 if (evt.target.className === 'reset-filters') {
                     filterResultsDiv.innerHTML = ''
                     const events = eventsDiv.querySelectorAll('.event')
