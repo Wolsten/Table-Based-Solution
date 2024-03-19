@@ -33,21 +33,22 @@ The url location of the style sheet should be set as an option using the data-cs
 
 ## Quick Start
 
-To generate a number of sample timelines for testing run the following script:
+To generate a number of sample timelines and index.html for testing in the top level `build` folder, run the following script:
 
 ```
-$ node excel-to-timeline test=true
+$ node excel-to-timeline format=test
 ```
+
+Then serve the index file using `LiveServer`, for example.
 
 The full set of parameters are as follows:
 
 | Parameter | Values | Description |
 | --------- | ------ | ----------- |
-| test | true or false | Default is `false`. When `false` only the actual timeline HTML is generated, and the resulting code can be included in other HTML pages or markdown (with suitable configuration). When set to `true` a full HTML file is generated which can be tested in a browser, e.g. using LiveServer. |
+| format | html test hugo| Default is `html`, i.e only the actual timeline HTML files are generated in the build folder, and the resulting code can be included in other HTML pages. If set to `test` an example website is generated, including an index file, which can be used to test that everything is working. If set to `hugo` a set of Hugo partial template files are generated in the `build` folder along with necessary files (shortcode, javascript and css) that can be used to integrate the timelines in an existing Hugo website. For more information on generating a Hugo website, refer to the [hugo readme](/hugo/readme.md). |
 | input | string | The name of the excel workbook to use as the source of timelines. If not specified the example workbook `timelines.xlsm` is used. |
-| output | string | The relative path for where to save the generated HTML files. If not specified the default is `timelines/`. |
-| css-url | string | This should be a root relative url to where to find the table-timeline.css stylesheet. The default is "/" |
-| images-url | string | This should be a root relative url to where to find any timeline or event header images. The default is "/" |
+| css-url | string | This should be a root relative url to where to find the table-timeline.css stylesheet. The default is "/". Ignored if `format` is set to `hugo`.|
+| images-url | string | This should be a root relative url to where to find any timeline or event header images. The default is "/". Ignored if `format` is set to `hugo`. |
 ||||
 
 
@@ -83,7 +84,7 @@ If not specified the default view is `chart`.
 
 Finally, the component will generate default colours for each event according to its category. You can override this using the `data-category-colours` attribute as follows:
 
-```
+``` css
 data-category-colours="fruit:#E49EDD,vegetable:#4D93D9,animal:#83CCEB"
 ```
 
@@ -95,7 +96,7 @@ Simply insert two rows before the start of the events with the first called `cat
 
 So an example table timeline would be structured as follows:
 
-```html
+``` html
 <figure
     is="table-timeline"
     [data-view="chart"]

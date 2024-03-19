@@ -18,11 +18,12 @@ const XLSX = require('xlsx');
 const SOURCE_FOLDER = './'
 
 // Props
-let buildFolder = 'timelines/'
+const buildFolder = 'build/'
+const hugoDefaultsFolder = 'hugo/'
 let fileName = 'timelines.xlsm'
-let test = false
 let cssUrl = "/"
 let imagesUrl = "/"
+let format = "html"
 
 // It is important that the rawHTML shortcodes appear at the start of the line.
 // Also, to get code highlighting in VSCode for HTML need the timeline to start 
@@ -167,18 +168,33 @@ function generateEventHtml(workbook, sheetName, json) {
 
   console.log(`Found ${nRows} rows in the worksheet "${sheetName}"`)
 
-  // need to use this
+  // Date generated
   const date = (new Date()).toISOString()
+  let view = 'chart'
+  let hugo = ''
+  let controls = 'view:true,tags:true,search:true,sorting:true,test:false'
+  if ( format === 'hugo' ){
+    hugo = `
+      {{ $view := .Get "view" }}
+      {{ $cssUrl := .Scratch.Get "cssUrl" }}
+      {{ $imagesUrl := .Scratch.Get "imagesUrl" }}
+      {{ $controls := .Scratch.Get "controls" }}
+    `
+    view = `{{- $view -}}`
+    cssUrl = `{{- $cssUrl -}}`
+    imagesUrl = `{{- $imagesUrl -}}`
+    controls = `{{- $controls -}}`
+  }
 
-  html = /* html */`
+  html = hugo + /* html */`
   <figure is="table-timeline" 
-          data-view="chart"
+          data-view="${view}"
           data-css-url="${cssUrl}" 
           data-images-url="${imagesUrl}" 
+          data-controls="${controls}"
           data-tags="${tags}"
           data-category-colours="${colours}"
-          data-created="${date}"
-          data-controls="view:true,tags:true,search:true,sorting:true">
+          data-created="${date}">
     <table>
     <thead>
       <tr>
@@ -253,17 +269,11 @@ process.argv.forEach(val => {
     const param = parts[0].trim()
     const value = parts[1].trim()
     switch (param) {
-      case 'test': 
-        test = value.toLowerCase() === 'true'
+      case 'format':
+        format = value.toLowerCase();
         break
       case 'input': 
         fileName = value
-        break
-      case 'output': 
-        if ( !value.endsWith('/') ) {
-          value += '/'
-        }
-        buildFolder = value
         break
       case 'css-url': 
         cssUrl = value
@@ -284,22 +294,28 @@ if (!fileName) {
 const workbook = XLSX.readFile(SOURCE_FOLDER + fileName);
 const paths = []
 
-// Prepare dest folder
-// const timelinesFolder = test ? 'timelines/' : ''
-// const folder = destFolder + timelinesFolder
+// Delete build folder and contents if already exists
 if ( fs.existsSync(buildFolder) ){
   try {
-    fs.rmSync(buildFolder) 
+    fs.rmSync(buildFolder, {recursive:true}) 
   } catch {
     console.error(`ERROR: There was an error attempting to delete previous dest folder "${buildFolder}"`)
   }
-} else {
-  try {
-    fs.mkdirSync(buildFolder)
-  } catch {
-    console.error(`ERROR: There was an error attempting to create dest folder "${buildFolder}"`)
-  }
+} 
+// Create new build folder
+try {
+  fs.mkdirSync(buildFolder)
+} catch {
+  console.error(`ERROR: There was an error attempting to create dest folder "${buildFolder}"`)
 }
+
+// If format is hugo copy over static files including the js and css files
+if ( format === 'hugo' ){
+  fs.cpSync(hugoDefaultsFolder, buildFolder, {recursive:true} )
+  fs.cpSync('table-timeline.js', `${buildFolder}/static/js/table-timeline.js`)
+  fs.cpSync('table-timeline.css', `${buildFolder}/static/css/table-timeline.css`)
+}
+
 
 // Export all the sheets
 workbook.SheetNames.forEach(sheetName => {
@@ -313,7 +329,7 @@ workbook.SheetNames.forEach(sheetName => {
     return
   }
 
-  if (test) {
+  if (format === 'test') {
     let imageHtml = ''
     let descriptionHtml = ''
     if ( results.image ){
@@ -328,7 +344,12 @@ workbook.SheetNames.forEach(sheetName => {
   }
 
   // Output the timelines
-  let path = buildFolder + fileName + '.html'
+  let path = buildFolder
+  if ( format === 'hugo'){
+    path += `layouts/partials/timelines/`
+  }
+  path += `${fileName}.html`
+
   try {
     fs.writeFileSync(path, html)
   } catch {
@@ -337,8 +358,8 @@ workbook.SheetNames.forEach(sheetName => {
   }
 })
 
-// Outout the index file
-if (test && paths.length > 0) {
+// Outout the index file?
+if (format==='test' && paths.length > 0) {
   const indexHtml = '<ul>\n\t\t\t\t' + paths.join('\n\t\t\t\t') + '\n\t\t\t</ul>'
   const html = generateTestFile('Index of test files', indexHtml)
   try {

@@ -1,0 +1,7 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-uk'
+title = 'My Hugo Site'
+
+# Allow shortcode calls in content files
+[security]
+  enableInlineShortcodes = true
